@@ -6,7 +6,13 @@ X       EQU     1000
         STA     1001
         ENTA    200
         STA     1002
-        ENT1    3
+        ENTA    300
+        STA     1003
+        ENTA    600
+        STA     1004
+        ENTA    400
+        STA     1005
+        ENT1    6
         JMP     MAX
         INCA    1
         END     INIT

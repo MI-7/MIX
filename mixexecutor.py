@@ -13,6 +13,7 @@ class MixExecutor(MySM):
         self.startState = orig
         self.memory = memory
         self.current_op = ''
+        self.profilingresult = {}
     
     def getNextValues(self, state, inp, verbose = False):
         statement = self.mix_code_dict[state]
@@ -23,7 +24,12 @@ class MixExecutor(MySM):
         return (s, s)
     
     def done(self, state):
-        return state == self.end
+        d = (state == self.end)
+        if (d):
+            mixlog(MDEBUG, "profiling result..."+str(self.profilingresult))
+            return True
+        else:
+            return False
     
     def execute(self, statement, current_line):
         sm = MixToMachineCodeTranslatorSM()
@@ -570,6 +576,15 @@ class MixExecutor(MySM):
                 self.memory.setcomparisonindicator(COMP_EQAL)
             else:
                 self.memory.setcomparisonindicator(COMP_LESS)
+
+        # generate profiling result
+        if (op in statementprofilingdict):
+            t = statementprofilingdict[op]
+            if (current_line in self.profilingresult):
+                (stmt, times, unit, total) = self.profilingresult[current_line]
+                self.profilingresult[current_line] = (stmt, times+1, unit, total+unit)
+            else:
+                self.profilingresult[current_line] = (statement, 1, statementprofilingdict[op], statementprofilingdict[op])
 
         return next_statement
 

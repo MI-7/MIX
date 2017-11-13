@@ -1,8 +1,8 @@
-statementdict = {'ADD'      : 1,
-                 'SUB'      : 2,
-                 'MUL'      : 3,
-                 'DIV'      : 4,
-                 'LDA'      : 8,
+statementdict ={'ADD'       : 1,
+                'SUB'       : 2,
+                'MUL'       : 3,
+                'DIV'       : 4,
+                'LDA'       : 8,
                 'LD1'       : 9,     # LDi
                 'LD2'       : 10,    # LDi
                 'LD3'       : 11,    # LDi
@@ -71,6 +71,80 @@ statementdict = {'ADD'      : 1,
                 'DEC6'      : 79,
                 'CMPA'      : 80,
                 }
+
+statementprofilingdict =   {'ADD'       : 2,
+                            'SUB'       : 2,
+                            'MUL'       : 10,
+                            'DIV'       : 12,
+                            'LDA'       : 2,
+                            'LD1'       : 2,    # LDi
+                            'LD2'       : 2,    # LDi
+                            'LD3'       : 2,    # LDi
+                            'LD4'       : 2,
+                            'LD5'       : 2,
+                            'LD6'       : 2,
+                            'LDX'       : 2,
+                            'LDAN'      : 2,
+                            'LD1N'      : 2,    # LDiN
+                            'LD2N'      : 2,    # LDiN
+                            'LD3N'      : 2,    # LDiN
+                            'LD4N'      : 2,    # LDiN
+                            'LD5N'      : 2,    # LDiN
+                            'LD6N'      : 2,    # LDiN
+                            'LDXN'      : 2,
+                            'STA'       : 2,
+                            'ST1'       : 2,
+                            'ST2'       : 2,
+                            'ST3'       : 2,
+                            'ST4'       : 2,
+                            'ST5'       : 2,
+                            'ST6'       : 2,
+                            'STX'       : 2,
+                            'STJ'       : 2,
+                            'STZ'       : 2,
+                            'JMP'       : 1,
+                            'JGE'       : 1,
+                            'J1P'       : 1,
+                            'J2P'       : 1,
+                            'J3P'       : 1,
+                            'J4P'       : 1,
+                            'J5P'       : 1,
+                            'J6P'       : 1,
+                            'J6NP'      : 1,
+                            'ENTA'      : 1,
+                            'ENT1'      : 1,
+                            'ENT2'      : 1,
+                            'ENT3'      : 1,
+                            'ENT4'      : 1,
+                            'ENT5'      : 1,
+                            'ENT6'      : 1,
+                            'ENTX'      : 1,
+                            'ENNA'      : 1,
+                            'ENNX'      : 1,
+                            'ENN1'      : 1,
+                            'ENN2'      : 1,
+                            'ENN3'      : 1,
+                            'ENN4'      : 1,
+                            'ENN5'      : 1,
+                            'ENN6'      : 1,
+                            'INCA'      : 1,
+                            'INCX'      : 1,
+                            'INC1'      : 1,
+                            'INC2'      : 1,
+                            'INC3'      : 1,
+                            'INC4'      : 1,
+                            'INC5'      : 1,
+                            'INC6'      : 1,
+                            'DECA'      : 1,
+                            'DECX'      : 1,
+                            'DEC1'      : 1,
+                            'DEC2'      : 1,
+                            'DEC3'      : 1,
+                            'DEC4'      : 1,
+                            'DEC5'      : 1,
+                            'DEC6'      : 1,
+                            'CMPA'      : 1,
+                            }
 
 OP_ADD=1
 OP_SUB=2
