@@ -1,0 +1,6 @@
+        ORIG    3000
+INIT    ENTA    200
+        STA     2000
+        ENTA    100
+        CMPA    2000
+        END     INIT
