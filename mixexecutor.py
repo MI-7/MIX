@@ -5,8 +5,8 @@ from sm import MySM
 
 # execute single line of code
 class MixExecutor(MySM):
-    def __init__(self, mix_code_dict, orig, end, memory):
-        self.mix_code_dict = mix_code_dict
+    def __init__(self, processed_code_dict, orig, end, memory):
+        self.processed_code_dict = processed_code_dict
         self.orig = orig
         self.end = end
         self.startState = orig
@@ -16,11 +16,10 @@ class MixExecutor(MySM):
         self.halted = False
     
     def getNextValues(self, state, inp, verbose = False):
-        statement = self.mix_code_dict[state]
-        mixlog(MDEBUG, "before executing..."+statement, str(self.memory))
-        s = self.execute(statement, state)
-        mixlog(MDEBUG, "after executing..."+statement, str(self.memory))
-        return (s, s)
+        mixlog(MDEBUG, "before executing..."+self.processed_code_dict[state], str(self.memory))
+        nexts = self.execute(state)
+        mixlog(MDEBUG, "after executing..."+self.processed_code_dict[state], str(self.memory))
+        return (nexts, nexts)
     
     def done(self, state):
         ended = (state == self.end)
@@ -33,20 +32,21 @@ class MixExecutor(MySM):
         else:
             return False
     
-    def execute(self, statement, current_line):
-        sm = MixToMachineCodeTranslatorSM()
-        sm.transduce([x for x in statement], False)
-        #(sym, aa, i, f, op, c) = sm.output
+    def execute(self, current_line):
+        #sm = MixToMachineCodeTranslatorSM()
+        #sm.transduce([x for x in statement], False)
+        (sym, aa1, aa2, i, f, c) = self.memory.getMemory(current_line)
+        aa = partstodec_withsign([sym, aa1, aa2])
         next_statement = current_line + 1
         
         # for move instruction profiling, counts how many words have been moved.
         op_moved = 0
         
-        aa_sign = '+'
-        if (aa.startswith('-')):
-            aa_sign = '-'
-        
-        aa = my_int(aa)
+        op = ''
+        for op_key in statementdict.keys():
+            if statementdict[op_key] == c:
+                op = op_key
+                break
         
         #LDA
         if (c == OP_LDA):
@@ -233,8 +233,7 @@ class MixExecutor(MySM):
             j = self.memory.getj();
             m = self.memory.getMemory(aa)
             m[0]=j[0]
-            m[1:4] = [0] * 3
-            m[4:6] = j[1:3]
+            m[1:3] = j[1:3]
             self.memory.setMemory(aa, m)
         
         if (c == OP_STZ):
@@ -562,13 +561,12 @@ class MixExecutor(MySM):
                 unit = statementprofilingdict[op]
                 if (c == OP_MOVE):
                     unit = op_moved * 2 + 1
-                self.profilingresult[current_line] = (statement, 1, unit, unit)
+                self.profilingresult[current_line] = (self.processed_code_dict[current_line], 1, unit, unit)
 
         return next_statement
 
 def testExecutor():
     code_text_in_list = []
-    processed_code = []
     ms = MemoryState()
     #ms.setMemory(2000, ['+'] + dectobin(200, 5))
     #ms.savei1(['+'] + dectobin(1, 2))
@@ -585,21 +583,26 @@ def testExecutor():
     
     mapp = MixALPreProcessor(code_text_in_list, ms)
     mapp.preprocessall()
+    processed_code = mapp.processed_code
     processed_code_dict = mapp.processed_code_dict
     orig = mapp.orig
     end = mapp.end
     
     mixlog(MDEBUG, "finished preprocessing")
     
-    sm = MixToMachineCodeTranslatorSM()
-    sm.transduce([x for x in statement], False)
-    (sym, aa, i, f, op, c) = sm.output
+    # load everything into memory
+    for line in processed_code_dict.keys():
+        sm = MixToMachineCodeTranslatorSM()
+        sm.transduce([x for x in processed_code_dict[line]], False)
+        (sym, aa, i, f, op, c) = sm.output
+        ms.setMemory(line, [sym] + dectobin(my_int(aa), 2) + [i, f, c])
 
-    
+    for n in range (3000, 3050):
+        print("M:", ms.getMemory(n))
     me = MixExecutor(processed_code_dict, orig, end, ms)
     me.go(True)
     mixlog(MDEBUG, "finished executing")
-    for n in range (0, 100):
+    for n in range (3000, 3050):
         print("M:", ms.getMemory(n))
     print("M:", ms.getMemory(3999))
     print("A:", ms.getA())

@@ -89,6 +89,8 @@ class MemoryState:
         
         result = result + "comp = " + self.comparison_indicator + "\n"
         
+        #result = result + str(self.memory)
+        
         return result
 
     def getMemory(self, addr):
