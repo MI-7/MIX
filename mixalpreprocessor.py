@@ -37,7 +37,6 @@ class MixALPreProcessor():
         self.orig = 0
         self.end = 0
         self.symboltable = {}
-        self.runtime_symboltable = {}
         self.processed_code = []
         self.processed_code_dict = {}
         
@@ -70,14 +69,14 @@ class MixALPreProcessor():
                     self.symboltable[loc] = current_line - orig_line - 1 + self.orig
                 self.end = current_line - orig_line - 1 + self.orig
             else:
-                if (loc != '' and op == 'STJ'):
+                if (loc != ''):# and op == 'STJ'):
                     # MAX STJ EXIT
-                    self.runtime_symboltable[addr] = ''
-                    self.symboltable[loc] = current_line - orig_line - 1 + self.orig
-                elif (loc != '' and op == 'JMP'):
+                    #self.runtime_symboltable[addr] = ''
+                    #self.symboltable[loc] = current_line - orig_line - 1 + self.orig
+                #elif (loc != '' and op == 'JMP'):
                     # EXIT JMP *, DON'T ADD A SYMBOL, EXIT MUST BE DECIDED IN RUN TIME
-                    pass
-                elif (loc != ''):
+                    #pass
+                #elif (loc != ''):
                     self.symboltable[loc] = current_line - orig_line - 1 + self.orig
             
             current_line = current_line + 1
@@ -110,27 +109,27 @@ class MixALPreProcessor():
                 
                 if (symbol != '' and symbol != '*'):
                     # EXIT JMP *
-                    if (symbol in self.runtime_symboltable):
-                        pass
-                    else:
-                        addr = addr.replace(symbol, str(self.symboltable[symbol]))
+                    #if (symbol in self.runtime_symboltable):
+                        #pass
+                    #else:
+                    addr = addr.replace(symbol, str(self.symboltable[symbol]))
                 elif (symbol != '' and symbol == '*'):
-                    if (loc != '' and op == 'JMP'):
+                    #if (loc != '' and op == 'JMP'):
                         # EXIT JMP *
-                        self.processed_code.append(loc + " " + op + " " + addr)
-                        self.processed_code_dict[current_line - orig_line - 1 + self.orig] = loc + " " + op + " " + addr
-                        current_line = current_line + 1
-                        continue
-                    else:
+                        #self.processed_code.append(loc + " " + op + " " + addr)
+                        #self.processed_code_dict[current_line - orig_line - 1 + self.orig] = loc + " " + op + " " + addr
+                        #current_line = current_line + 1
+                        #continue
+                    #else:
                         # todo: *,3 and *+3 are different
-                        addr = str(eval(addr.replace('*', str(current_line - orig_line - 1 + self.orig))))
+                    addr = str(eval(addr.replace('*', str(current_line - orig_line - 1 + self.orig))))
 
                 self.processed_code.append(op + " " + addr)
                 self.processed_code_dict[current_line - orig_line - 1 + self.orig] = op + " " + addr
             
             current_line = current_line + 1
         
-        mixlog(MDEBUG, "runtime symbol table:", self.runtime_symboltable)
+        #mixlog(MDEBUG, "runtime symbol table:", self.runtime_symboltable)
         mixlog (MDEBUG, 'symbol table:', self.symboltable)
         mixlog (MDEBUG, 'processed code:', self.processed_code)
         mixlog(MDEBUG, "processed code dict:", self.processed_code_dict)
@@ -140,7 +139,7 @@ class MixALPreProcessor():
 
 if __name__ == "__main__":
     code_text_in_list = []
-    fname = './test_program_win.txt'
+    fname = './test_programs/test_program_win.txt'
 
     f = open(fname, 'r')
     with f:

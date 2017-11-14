@@ -5,28 +5,30 @@ from sm import MySM
 
 # execute single line of code
 class MixExecutor(MySM):
-    def __init__(self, mix_code_dict, runtime_symboltable, orig, end, memory):
+    def __init__(self, mix_code_dict, orig, end, memory):
         self.mix_code_dict = mix_code_dict
-        self.runtime_symboltable = runtime_symboltable
         self.orig = orig
         self.end = end
         self.startState = orig
         self.memory = memory
         self.current_op = ''
         self.profilingresult = {}
+        self.halted = False
     
     def getNextValues(self, state, inp, verbose = False):
         statement = self.mix_code_dict[state]
         mixlog(MDEBUG, "before executing..."+statement, str(self.memory))
         s = self.execute(statement, state)
         mixlog(MDEBUG, "after executing..."+statement, str(self.memory))
-        mixlog(MDEBUG, "runtime symbols..."+str(self.runtime_symboltable))
         return (s, s)
     
     def done(self, state):
-        d = (state == self.end)
-        if (d):
-            mixlog(MDEBUG, "profiling result..."+str(self.profilingresult))
+        ended = (state == self.end)
+        halted = self.halted
+        
+        if (ended or halted):
+            if (ended):
+                mixlog(MDEBUG, "profiling result..."+str(self.profilingresult))
             return True
         else:
             return False
@@ -34,7 +36,7 @@ class MixExecutor(MySM):
     def execute(self, statement, current_line):
         sm = MixToMachineCodeTranslatorSM()
         sm.transduce([x for x in statement], False)
-        (sym, aa, i, f, op, c) = sm.output
+        #(sym, aa, i, f, op, c) = sm.output
         next_statement = current_line + 1
         
         # for move instruction profiling, counts how many words have been moved.
@@ -44,9 +46,7 @@ class MixExecutor(MySM):
         if (aa.startswith('-')):
             aa_sign = '-'
         
-        # for JMP / STJ
-        if (not aa.isalpha()):
-            aa = my_int(aa)
+        aa = my_int(aa)
         
         #LDA
         if (c == OP_LDA):
@@ -147,76 +147,19 @@ class MixExecutor(MySM):
                         x[t] = m_seg[t-6+len(m_seg)]
                 self.memory.saveX(x)
                 
-        if (c == OP_LD1):
+        if (c == OP_LD1 or c == OP_LD2 or c == OP_LD3 or c == OP_LD4 or c == OP_LD5 or c == OP_LD6):
+            j = c - OP_LD1 + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
             m = self.memory.getMemory(aa+m_shift)
             (L, R) = LRFROMF(f)
-            self.memory.savei1([m[0]]+m[L: R+1])
-        
-        if (c == OP_LD2):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei2([m[0]]+m[L: R+1])
-        
-        if (c == OP_LD3):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei3([m[0]]+m[L: R+1])
+            getattr(self.memory, 'savei'+str(j))([m[0]]+m[L: R+1])
 
-        if (c == OP_LD4):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            self.memory.savei4([m[0]]+m[L: R+1])
-
-        if (c == OP_LD5):
+        if (c == OP_LD1N or c == OP_LD2N or c == OP_LD3N or c == OP_LD4N or c == OP_LD5N or c == OP_LD6N):
+            j = c - OP_LD1N + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
             m = self.memory.getMemory(aa+m_shift)
             (L, R) = LRFROMF(f)
-            self.memory.savei5([m[0]]+m[L: R+1])
-
-        if (c == OP_LD6):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei6([m[0]]+m[L: R+1])
-
-        if (c == OP_LD1N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei1([negsign(m[0])]+m[L: R+1])
-        
-        if (c == OP_LD2N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei2([negsign(m[0])]+m[L: R+1])
-        
-        if (c == OP_LD3N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei3([negsign(m[0])]+m[L: R+1])
-
-        if (c == OP_LD4N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei4([negsign(m[0])]+m[L: R+1])
-
-        if (c == OP_LD5N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei5([negsign(m[0])]+m[L: R+1])
-
-        if (c == OP_LD6N):
-            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-            m = self.memory.getMemory(aa+m_shift)
-            (L, R) = LRFROMF(f)
-            self.memory.savei6([negsign(m[0])]+m[L: R+1])
+            getattr(self.memory, 'savei'+str(j))([negsign(m[0])]+m[L: R+1])
         
         if (c == OP_STA):
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
@@ -280,19 +223,19 @@ class MixExecutor(MySM):
             self.memory.setMemory(aa, m)
         
         if (c == OP_STJ):
-            if (aa.isalpha()):
+            #if (aa.isalpha()):
                 # for STJ / JMP
-                j = partstodec_withsign(self.memory.getj());
-                self.runtime_symboltable[aa] = j
-            else:
-                m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
-                aa = aa+m_shift
-                j = self.memory.getj();
-                m = self.memory.getMemory(aa)
-                m[0]=j[0]
-                m[1:4] = [0] * 3
-                m[4:6] = j[1:3]
-                self.memory.setMemory(aa, m)
+                #j = partstodec_withsign(self.memory.getj());
+                #self.runtime_symboltable[aa] = j
+            #else:
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            aa = aa+m_shift
+            j = self.memory.getj();
+            m = self.memory.getMemory(aa)
+            m[0]=j[0]
+            m[1:4] = [0] * 3
+            m[4:6] = j[1:3]
+            self.memory.setMemory(aa, m)
         
         if (c == OP_STZ):
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
@@ -429,6 +372,9 @@ class MixExecutor(MySM):
             self.memory.saveA([asign] + dectobin(result, 5))
             self.memory.saveX([xsign] + dectobin(remain, 5))
         
+        if (c == OP_HLT):
+            pass
+        
         if (c == OP_ENTA):
             addri = None
             if (i != 0):
@@ -526,17 +472,17 @@ class MixExecutor(MySM):
             # todo: overload processing
 
         # aa == "JMP" for STJ / JMP *
-        if (c == OP_JMP or aa == "JMP"):
+        if (c == OP_JMP): #or aa == "JMP"):
             if (c == OP_JMP):
                 self.memory.savej(dectobin_withsign(next_statement, 2))
                 m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
                 next_statement = aa + m_shift
             # for JMP * back to subroutine caller
-            if (aa == "JMP"):
-                self.memory.savej(dectobin_withsign(next_statement, 2))
-                loc = statement.split()[0]
-                addr = self.runtime_symboltable[loc]
-                next_statement = addr
+            #if (aa == "JMP"):
+                #self.memory.savej(dectobin_withsign(next_statement, 2))
+                #loc = statement.split()[0]
+                #addr = self.runtime_symboltable[loc]
+                #next_statement = addr
         
         if (c == OP_JOV):
             if (self.memory.isoverloaded()):
@@ -602,6 +548,8 @@ class MixExecutor(MySM):
                 op_moved = op_moved + 1
                 self.memory.setMemory(i1, self.memory.getMemory(aa + m_shift + j))
 
+        # nop is not implemented, all the instructions that cannot be recognized is passed
+
         # generate profiling result
         if (op in statementprofilingdict):
             t = statementprofilingdict[op]
@@ -627,7 +575,7 @@ def testExecutor():
     #ms.savej(['+'] + dectobin(2222, 2))
     #ms.saveA(['-'] + dectobin(1, 5))
     #ms.saveX(['-'] + dectobin(2, 5))
-    fname = './test_programs/test_program_jump.txt'
+    fname = './test_programs/test_program_win.txt'
 
     f = open(fname, 'r')
     with f:
@@ -640,16 +588,20 @@ def testExecutor():
     processed_code_dict = mapp.processed_code_dict
     orig = mapp.orig
     end = mapp.end
-    runtime_symboltable = mapp.runtime_symboltable
     
     mixlog(MDEBUG, "finished preprocessing")
     
-    me = MixExecutor(processed_code_dict, runtime_symboltable, orig, end, ms)
+    sm = MixToMachineCodeTranslatorSM()
+    sm.transduce([x for x in statement], False)
+    (sym, aa, i, f, op, c) = sm.output
+
+    
+    me = MixExecutor(processed_code_dict, orig, end, ms)
     me.go(True)
     mixlog(MDEBUG, "finished executing")
     for n in range (0, 100):
         print("M:", ms.getMemory(n))
-    print("M:", ms.getMemory(3000))
+    print("M:", ms.getMemory(3999))
     print("A:", ms.getA())
     print("X:", ms.getX())
     print("i1", ms.geti1())

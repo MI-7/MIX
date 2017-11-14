@@ -1,7 +1,10 @@
-statementdict ={'ADD'       : 1,
+statementdict ={
+                'NOP'       : 0,
+                'ADD'       : 1,
                 'SUB'       : 2,
                 'MUL'       : 3,
                 'DIV'       : 4,
+                'HLT'       : 5,
                 'MOVE'      : 7,
                 'LDA'       : 8,
                 'LD1'       : 9,     # LDi
@@ -75,10 +78,13 @@ statementdict ={'ADD'       : 1,
                 'CMPA'      : 80,
                 }
 
-statementprofilingdict =   {'ADD'       : 2,
+statementprofilingdict =   {
+                            'NOP'       : 1,
+                            'ADD'       : 2,
                             'SUB'       : 2,
                             'MUL'       : 10,
                             'DIV'       : 12,
+                            'HLT'       : 1,
                             'LDA'       : 2,
                             'LD1'       : 2,    # LDi
                             'LD2'       : 2,    # LDi
@@ -152,10 +158,12 @@ statementprofilingdict =   {'ADD'       : 2,
                             'MOVE'      : 1,  # 1 + 2 * each word moved
                             }
 
+OP_NOP=0
 OP_ADD=1
 OP_SUB=2
 OP_MUL=3
 OP_DIV=4
+OP_HLT=5
 OP_MOVE=7
 OP_LDA=8
 OP_LD1=9

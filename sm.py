@@ -4,6 +4,7 @@ from logger import *
 class MySM:
     def start(self):
         self.state = self.startState
+        self.halted = False
     
     def getNextValues(self, state, inp, verbose=False):
         nextState = self.getNextState(state, inp)
@@ -32,6 +33,11 @@ class MySM:
     def go(self, verbose=False, compact=False):
         self.start()
         
+        while(not self.done(self.state)):
+            self.step(undef, verbose, compact)
+    
+    def resume(self, verbose=False, compact=False):
+        self.halted = False
         while(not self.done(self.state)):
             self.step(undef, verbose, compact)
 
