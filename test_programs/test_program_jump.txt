@@ -1,0 +1,9 @@
+        ORIG    3000
+INIT    ENTA    1073741823
+        STA     1000
+        ADD     1000
+        JOV     HAHA
+        ENT1    666
+        JMP     FIN
+HAHA    ENT1    333
+FIN     END     INIT

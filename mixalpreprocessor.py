@@ -66,6 +66,8 @@ class MixALPreProcessor():
                 self.orig = my_int(addr)
                 orig_line = current_line
             elif (op == 'END'):
+                if (loc != ''):
+                    self.symboltable[loc] = current_line - orig_line - 1 + self.orig
                 self.end = current_line - orig_line - 1 + self.orig
             else:
                 if (loc != '' and op == 'STJ'):

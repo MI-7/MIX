@@ -2,6 +2,7 @@ statementdict ={'ADD'       : 1,
                 'SUB'       : 2,
                 'MUL'       : 3,
                 'DIV'       : 4,
+                'MOVE'      : 7,
                 'LDA'       : 8,
                 'LD1'       : 9,     # LDi
                 'LD2'       : 10,    # LDi
@@ -29,6 +30,8 @@ statementdict ={'ADD'       : 1,
                 'STJ'       : 32,
                 'STZ'       : 33,
                 'JMP'       : 100,
+                'JOV'       : 102,
+                'JNOV'      : 103,
                 'JGE'       : 107,
                 'J1P'       : 134,
                 'J2P'       : 135,
@@ -103,6 +106,8 @@ statementprofilingdict =   {'ADD'       : 2,
                             'STJ'       : 2,
                             'STZ'       : 2,
                             'JMP'       : 1,
+                            'JOV'       : 1,
+                            'JNOV'      : 1,
                             'JGE'       : 1,
                             'J1P'       : 1,
                             'J2P'       : 1,
@@ -144,12 +149,14 @@ statementprofilingdict =   {'ADD'       : 2,
                             'DEC5'      : 1,
                             'DEC6'      : 1,
                             'CMPA'      : 1,
+                            'MOVE'      : 1,  # 1 + 2 * each word moved
                             }
 
 OP_ADD=1
 OP_SUB=2
 OP_MUL=3
 OP_DIV=4
+OP_MOVE=7
 OP_LDA=8
 OP_LD1=9
 OP_LD2=10
@@ -177,6 +184,8 @@ OP_STX=31
 OP_STJ=32
 OP_STZ=33
 OP_JMP=100
+OP_JOV=102
+OP_JNOV=103
 OP_JGE=107
 OP_J1P=134
 OP_J2P=135

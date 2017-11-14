@@ -1,0 +1,5 @@
+        ORIG    3000
+INIT    ENT1    1
+        ST1     1
+        MOVE    0,0(12:3)
+        END     INIT

@@ -84,4 +84,5 @@ def safeSubtract(i1, i2):
 
 if __name__ == "__main__":
     print(dectobin(200, 2))
-    print(partstodec([31, 16]))
+    print(partstodec([5, 13]))
+    print(LPLUSR(12, 3))

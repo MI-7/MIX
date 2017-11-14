@@ -53,11 +53,15 @@ class MixToMachineCodeTranslatorSM(MySM):
         elif (s == "i" and inp == "("):
             s = "L"
         elif (s == "L" and inp.isnumeric()):
-            self.l = inp
+            self.l = self.l + inp
         elif (s == "L" and inp == ":"):
             s = "R"
         elif (s == "R" and inp.isnumeric()):
-            self.r = inp
+            # if we have some input for R, then we abandon the default "5"
+            if (self.r != ''):
+                self.r = inp
+            else:
+                self.r = self.r + inp
         elif (s == "R" and inp == ")"):
             s = "end"
         

@@ -37,6 +37,9 @@ class MixExecutor(MySM):
         (sym, aa, i, f, op, c) = sm.output
         next_statement = current_line + 1
         
+        # for move instruction profiling, counts how many words have been moved.
+        op_moved = 0
+        
         aa_sign = '+'
         if (aa.startswith('-')):
             aa_sign = '-'
@@ -321,9 +324,11 @@ class MixExecutor(MySM):
             aa = aa+m_shift
             m = self.memory.getMemory(aa)
             a = self.memory.getA()
+            
+            (L, R) = LRFROMF(f)
             if (L == 0):
                 L = L + 1
-            (L, R) = LRFROMF(f)
+            
             m_seg = m[L:R+1]
             
             m_part = partstodec(m_seg)
@@ -533,6 +538,19 @@ class MixExecutor(MySM):
                 addr = self.runtime_symboltable[loc]
                 next_statement = addr
         
+        if (c == OP_JOV):
+            if (self.memory.isoverloaded()):
+                self.memory.clearoverload()
+                m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+                next_statement = aa + m_shift
+        
+        if (c == OP_JNOV):
+            if (self.memory.isoverloaded()):
+                self.memory.clearoverload()
+            else:
+                m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+                next_statement = aa + m_shift
+        
         if (c == OP_JGE):
             indi = self.memory.getcomparisonindicator()
             if (indi == COMP_GRET or indi == COMP_EQAL):
@@ -576,15 +594,27 @@ class MixExecutor(MySM):
                 self.memory.setcomparisonindicator(COMP_EQAL)
             else:
                 self.memory.setcomparisonindicator(COMP_LESS)
+        
+        if (c == OP_MOVE):
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            i1 = partstodec_withsign(getattr(self.memory, 'geti'+str(1))())
+            for j in range(0, f):
+                op_moved = op_moved + 1
+                self.memory.setMemory(i1, self.memory.getMemory(aa + m_shift + j))
 
         # generate profiling result
         if (op in statementprofilingdict):
             t = statementprofilingdict[op]
             if (current_line in self.profilingresult):
                 (stmt, times, unit, total) = self.profilingresult[current_line]
+                if (c == OP_MOVE):
+                    unit = op_moved * 2 + 1
                 self.profilingresult[current_line] = (stmt, times+1, unit, total+unit)
             else:
-                self.profilingresult[current_line] = (statement, 1, statementprofilingdict[op], statementprofilingdict[op])
+                unit = statementprofilingdict[op]
+                if (c == OP_MOVE):
+                    unit = op_moved * 2 + 1
+                self.profilingresult[current_line] = (statement, 1, unit, unit)
 
         return next_statement
 
@@ -597,7 +627,7 @@ def testExecutor():
     #ms.savej(['+'] + dectobin(2222, 2))
     #ms.saveA(['-'] + dectobin(1, 5))
     #ms.saveX(['-'] + dectobin(2, 5))
-    fname = './test_program_win.txt'
+    fname = './test_programs/test_program_jump.txt'
 
     f = open(fname, 'r')
     with f:
@@ -617,6 +647,8 @@ def testExecutor():
     me = MixExecutor(processed_code_dict, runtime_symboltable, orig, end, ms)
     me.go(True)
     mixlog(MDEBUG, "finished executing")
+    for n in range (0, 100):
+        print("M:", ms.getMemory(n))
     print("M:", ms.getMemory(3000))
     print("A:", ms.getA())
     print("X:", ms.getX())

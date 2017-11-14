@@ -4,6 +4,9 @@ COMP_LESS='L'
 COMP_EQAL='E'
 COMP_GRET='G'
 
+OVERLOADED=1
+N_OVERLOADED=0
+
 class MemoryState:
     def __init__(self, memory_space = 4000, tape_space = 21):
         self.a1 = 0
@@ -152,11 +155,14 @@ class MemoryState:
     def savej(self, word):
         [self.jsym, self.j4, self.j5] = word
     
+    def isoverloaded(self):
+        return self.overload_switch == OVERLOADED
+    
     def setoverload(self):
-        self.overload_switch = 1
+        self.overload_switch = OVERLOADED
     
     def clearoverload(self):
-        self.overload_switch = 0
+        self.overload_switch = N_OVERLOADED
     
     def setcomparisonindicator(self, indi):
         self.comparison_indicator = indi
