@@ -548,6 +548,26 @@ class MixExecutor(MySM):
                 self.memory.setMemory(i1, self.memory.getMemory(aa + m_shift + j))
 
         # nop is not implemented, all the instructions that cannot be recognized is passed
+        
+        # ord('9')=57; chr(57)='9'
+        if (c == OP_NUM):
+            a = self.memory.getA()
+            x = self.memory.getX()
+            self.memory.saveA([a[0]] + dectobin(int(''.join([chr(n) for n in a[1:]+x[1:]])), 5))
+            mixlog(MDEBUG, "op=num..a=", self.memory.getA())
+        
+        # ord('9')=57; chr(57)='9'
+        if (c == OP_CHAR):
+            a = self.memory.getA()
+            x = self.memory.getX()
+            a_num = str(partstodec_withsign(a)).rjust(10, '0')
+            mixlog(MDEBUG, "op=char..a_num=..", a_num)
+            
+            self.memory.saveA([a[0]] + [ord(n) for n in a_num[0:5]])
+            self.memory.saveX([x[0]] + [ord(n) for n in a_num[5:10]])
+            
+            mixlog(MDEBUG, "op=char..a=", self.memory.getA())
+            mixlog(MDEBUG, "op=char..x=", self.memory.getX())
 
         # generate profiling result
         if (op in statementprofilingdict):
@@ -565,7 +585,7 @@ class MixExecutor(MySM):
 
         return next_statement
 
-def testExecutor():
+def testWithAFile(fname = './test_programs/exercise_1.3.22.txt'):
     code_text_in_list = []
     ms = MemoryState()
     #ms.setMemory(2000, ['+'] + dectobin(200, 5))
@@ -573,7 +593,6 @@ def testExecutor():
     #ms.savej(['+'] + dectobin(2222, 2))
     #ms.saveA(['-'] + dectobin(1, 5))
     #ms.saveX(['-'] + dectobin(2, 5))
-    fname = './test_programs/test_program_win.txt'
 
     f = open(fname, 'r')
     with f:
@@ -595,16 +614,15 @@ def testExecutor():
         sm = MixToMachineCodeTranslatorSM()
         sm.transduce([x for x in processed_code_dict[line]], False)
         (sym, aa, i, f, op, c) = sm.output
-        ms.setMemory(line, [sym] + dectobin(my_int(aa), 2) + [i, f, c])
+        aa = dectobin(my_int(aa), 2)
+        ms.setMemory(line, [sym] + aa + [i, f, c])
 
-    for n in range (3000, 3050):
-        print("M:", ms.getMemory(n))
     me = MixExecutor(processed_code_dict, orig, end, ms)
     me.go(True)
     mixlog(MDEBUG, "finished executing")
-    for n in range (3000, 3050):
-        print("M:", ms.getMemory(n))
-    print("M:", ms.getMemory(3999))
+    #for n in range (3000, 3050):
+        #print("M:", ms.getMemory(n))
+    print("M:", ms.getMemory(2000))
     print("A:", ms.getA())
     print("X:", ms.getX())
     print("i1", ms.geti1())
@@ -614,6 +632,9 @@ def testExecutor():
     print("i5", ms.geti5())
     print("i6", ms.geti6())
     print("cmp", ms.getcomparisonindicator())
+
+def testExecutor():
+    testWithAFile(fname = './test_programs/test_program_char.txt')
 
 # LDA 2000, 2(0:3)
 # LDA 2000, 2(1:3)

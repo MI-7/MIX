@@ -76,6 +76,8 @@ statementdict ={
                 'DEC5'      : 78,
                 'DEC6'      : 79,
                 'CMPA'      : 80,
+                'NUM'       : 200,
+                'CHAR'      : 201,
                 }
 
 statementprofilingdict =   {
@@ -156,6 +158,8 @@ statementprofilingdict =   {
                             'DEC6'      : 1,
                             'CMPA'      : 1,
                             'MOVE'      : 1,  # 1 + 2 * each word moved
+                            'NUM'       : 10,
+                            'CHAR'      : 10,
                             }
 
 OP_NOP=0
@@ -235,3 +239,5 @@ OP_DEC4=77
 OP_DEC5=78
 OP_DEC6=79
 OP_CMPA=80
+OP_NUM=200
+OP_CHAR=201

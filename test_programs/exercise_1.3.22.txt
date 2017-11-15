@@ -1,0 +1,11 @@
+        ORIG    3000
+INIT    ENT1    13
+        ENTA    2
+        STA     2000
+        ENTA    1
+DOMUL   MUL     2000
+        STX     2001
+        LDA     2001
+        DEC1    1
+        J1P     DOMUL
+        END     INIT
