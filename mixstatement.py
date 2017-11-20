@@ -78,6 +78,12 @@ statementdict ={
                 'CMPA'      : 80,
                 'NUM'       : 200,
                 'CHAR'      : 201,
+                'SLA'       : 300,
+                'SRA'       : 301,
+                'SLAX'      : 302,
+                'SRAX'      : 303,
+                'SLC'       : 304,
+                'SRC'       : 305,
                 }
 
 statementprofilingdict =   {
@@ -160,6 +166,12 @@ statementprofilingdict =   {
                             'MOVE'      : 1,  # 1 + 2 * each word moved
                             'NUM'       : 10,
                             'CHAR'      : 10,
+                            'SLA'       : 1,
+                            'SRA'       : 1,
+                            'SLAX'      : 1,
+                            'SRAX'      : 1,
+                            'SLC'       : 1,
+                            'SRC'       : 1,
                             }
 
 OP_NOP=0
@@ -241,3 +253,10 @@ OP_DEC6=79
 OP_CMPA=80
 OP_NUM=200
 OP_CHAR=201
+
+OP_SLA=300
+OP_SRA=301
+OP_SLAX=302
+OP_SRAX=303
+OP_SLC=304
+OP_SRC=305
