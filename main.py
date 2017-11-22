@@ -2,10 +2,8 @@ import sys, os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from memorystate import *
 import numpy as np
-from mixsm import MixSM
-from nextstatementsm import NextStatementSM
-from autoexecutesm import AutoExecuteSM
 from utility import *
 from codeeditor import CodeEditor
 
@@ -23,8 +21,7 @@ class App(QMainWindow):
         self.code_to_execute = ""
         self.code_text = ""
         self.code_text_in_list = []
-        self.next_stmt_sm = None
-        self.mix_sm = None
+        self.memory = MemoryState()
         self.initUI()
  
     @pyqtSlot()
@@ -56,10 +53,44 @@ class App(QMainWindow):
         self.current_line = 0
         self.total_line = self.textbox_code.document().lineCount()
         
-        self.mix_sm = MixSM()
-        self.mix_sm.start()
-        self.next_stmt_sm = NextStatementSM(self.code_text_in_list, self.current_line)
-        self.next_stmt_sm.start()
+        self.code_text_in_list, self.current_line
+        
+        code_text_in_list = []
+        ms = MemoryState()
+
+        
+        mapp = MixALPreProcessor(self.code_text_in_list, self.memory)
+        mapp.preprocessall()
+        processed_code = mapp.processed_code
+        processed_code_dict = mapp.processed_code_dict
+        orig = mapp.orig
+        end = mapp.end
+        
+        mixlog(MDEBUG, "finished preprocessing")
+        
+        # load everything into memory
+        for line in processed_code_dict.keys():
+            sm = MixToMachineCodeTranslatorSM()
+            sm.transduce([x for x in processed_code_dict[line]], False)
+            (sym, aa, i, f, op, c) = sm.output
+            aa = dectobin(my_int(aa), 2)
+            ms.setMemory(line, [sym] + aa + [i, f, c])
+    
+        me = MixExecutor(processed_code_dict, orig, end, ms)
+        me.go(True)
+        mixlog(MDEBUG, "finished executing")
+        #for n in range (3000, 3050):
+            #print("M:", ms.getMemory(n))
+        print("M:", ms.getMemory(2000))
+        print("A:", ms.getA())
+        print("X:", ms.getX())
+        print("i1", ms.geti1())
+        print("i2", ms.geti2())
+        print("i3", ms.geti3())
+        print("i4", ms.geti4())
+        print("i5", ms.geti5())
+        print("i6", ms.geti6())
+        print("cmp", ms.getcomparisonindicator())
         
         cur = QTextCursor(self.textbox_code.document().findBlockByLineNumber(self.current_line))
         self.textbox_code.setTextCursor(cur)

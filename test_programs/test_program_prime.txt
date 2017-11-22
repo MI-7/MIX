@@ -1,0 +1,9 @@
+P       EQU     0
+L       EQU     500
+        ORIG    3000
+        ENT1    2
+        ENT2    0
+        ST1     P,2
+        ENT2    1
+        ENT1    3
+        
