@@ -85,6 +85,12 @@ statementdict ={
                 'CMP6'      : 87,
                 'NUM'       : 200,
                 'CHAR'      : 201,
+                'SLA'       : 300,
+                'SRA'       : 301,
+                'SLAX'      : 302,
+                'SRAX'      : 303,
+                'SLC'       : 304,
+                'SRC'       : 305,
                 }
 
 statementprofilingdict =   {
@@ -174,6 +180,12 @@ statementprofilingdict =   {
                             'CMP4'      : 1,
                             'CMP5'      : 1,
                             'CMP6'      : 1,
+                            'SLA'       : 1,
+                            'SRA'       : 1,
+                            'SLAX'      : 1,
+                            'SRAX'      : 1,
+                            'SLC'       : 1,
+                            'SRC'       : 1,
                             }
 
 OP_NOP=0
@@ -262,3 +274,10 @@ OP_CMP5=86
 OP_CMP6=87
 OP_NUM=200
 OP_CHAR=201
+
+OP_SLA=300
+OP_SRA=301
+OP_SLAX=302
+OP_SRAX=303
+OP_SLC=304
+OP_SRC=305

@@ -16,7 +16,7 @@ class MixToMachineCodeTranslatorSM(MySM):
         self.c = 0
         self.i = "0"
         self.l = "0"
-        self.r = "5"
+        self.r = str(WORD_WIDTH)
         self.sym = "+"
         self.aa = ""
         

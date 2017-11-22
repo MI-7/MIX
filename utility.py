@@ -5,20 +5,27 @@ MAX_BYTE_HOLDING = 2 ** BYTE_WIDTH - 1
 MAX_NUMBER = 2 ** (BYTE_WIDTH * WORD_WIDTH) - 1
 
 # 2000 -> [31][16]
-def dectobin(num, width):
-    s = bin(num)[2:].zfill(width * BYTE_WIDTH)
-    return [int(s[i * BYTE_WIDTH:(i+1) * BYTE_WIDTH], 2) for i in range(0, width)]
+def dectobin(num, width, byte_width = BYTE_WIDTH):
+    s = bin(num)[2:].zfill(width * byte_width)
+    return [int(s[i * byte_width:(i+1) * byte_width], 2) for i in range(0, width)]
 
-def dectobin_withsign(num, width):
-    s = bin(abs(num))[2:].zfill(width * BYTE_WIDTH)
+# 111111111000000000 -> 0000000000 (get the right part)
+def dectobin_right(num, width, byte_width = BYTE_WIDTH):
+    s = bin(num)[2:].zfill(width * byte_width)
+    s = s[-1 * width * byte_width:]
+    
+    return [int(s[(i) * byte_width:(i+1) * byte_width], 2) for i in range(0, width)]
+
+def dectobin_withsign(num, width, byte_width = BYTE_WIDTH):
+    s = bin(abs(num))[2:].zfill(width * byte_width)
     if (num >= 0):
-        return ['+'] + [int(s[i * BYTE_WIDTH:(i+1) * BYTE_WIDTH], 2) for i in range(0, width)]
+        return ['+'] + [int(s[i * byte_width:(i+1) * byte_width], 2) for i in range(0, width)]
     else:
-        return ['-'] + [int(s[i * BYTE_WIDTH:(i+1) * BYTE_WIDTH], 2) for i in range(0, width)]
+        return ['-'] + [int(s[i * byte_width:(i+1) * byte_width], 2) for i in range(0, width)]
 
 # [32, 16] => +2000
-def partstodec(s):
-    return int(''.join([bin(n)[2:].zfill(BYTE_WIDTH) for n in s]), 2)
+def partstodec(s, byte_width = BYTE_WIDTH):
+    return int(''.join([bin(n)[2:].zfill(byte_width) for n in s]), 2)
 
 def partstodec_withsign(s):
     r = partstodec(s[1:])
@@ -84,5 +91,7 @@ def safeSubtract(i1, i2):
 
 if __name__ == "__main__":
     print(dectobin(12977699, 5))
-    print(partstodec([63, 63]))
+    print(dectobin_right(68702699520, 5))
+    print(dectobin_withsign(-12933883, 5))
+    print(partstodec([1,2,3,4,5,6,7,8,9,10]))
     print(LPLUSR(12, 3))
