@@ -2,6 +2,7 @@ from memorystate import *
 from mixaltomachinecode import *
 from mixalpreprocessor import *
 from sm import MySM
+from utility import *
 
 # execute single line of code
 class MixExecutor(MySM):
@@ -16,9 +17,9 @@ class MixExecutor(MySM):
         self.halted = False
     
     def getNextValues(self, state, inp, verbose = False):
-        mixlog(MDEBUG, "before executing..."+self.processed_code_dict[state], str(self.memory))
+        mixlog(MDEBUG, "before executing..."+self.processed_code_dict[state], str(self.memory), self.memory.getMemory(1999))
         nexts = self.execute(state)
-        mixlog(MDEBUG, "after executing..."+self.processed_code_dict[state], str(self.memory))
+        mixlog(MDEBUG, "after executing..."+self.processed_code_dict[state], str(self.memory), self.memory.getMemory(1999))
         return (nexts, nexts)
     
     def done(self, state):
@@ -191,7 +192,7 @@ class MixExecutor(MySM):
             aa = aa+m_shift
             x = self.memory.getX()
             if (f == WORD_WIDTH):
-                self.memory.setMemory(aa, x)
+                self.memory.setMemory(aa, x[:])
             else:
                 m = self.memory.getMemory(aa)
                 (L, R) = LRFROMF(f)
@@ -611,7 +612,7 @@ class MixExecutor(MySM):
             i1 = partstodec_withsign(getattr(self.memory, 'geti'+str(1))())
             for j in range(0, f):
                 op_moved = op_moved + 1
-                self.memory.setMemory(i1, self.memory.getMemory(aa + m_shift + j))
+                self.memory.setMemory(i1, self.memory.getMemory(aa + m_shift + j)[:])
 
         # nop is not implemented, all the instructions that cannot be recognized is passed
         
@@ -800,22 +801,22 @@ def test_char_and_shift(fname):
 def test_prime(fname):
     code_text_in_list = []
     ms = MemoryState()
-
+    
     f = open(fname, 'r')
     with f:
         code_text_in_list = f.read().splitlines()
         #print(self.code_text_in_list)
     f.close()
-    
-    mapp = MixALPreProcessor(code_text_in_list, ms)
+        
+    mapp = MixALPreProcessor(code_text_in_list)
     mapp.preprocessall()
     processed_code = mapp.processed_code
     processed_code_dict = mapp.processed_code_dict
     orig = mapp.orig
     end = mapp.end
     
-    mixlog(MDEBUG, "finished preprocessing")
-    
+    mixlog(MINFO, "finished preprocessing")
+
     # load everything into memory
     for line in processed_code_dict.keys():
         sm = MixToMachineCodeTranslatorSM()
@@ -825,10 +826,10 @@ def test_prime(fname):
         ms.setMemory(line, [sym] + aa + [i, f, c])
 
     me = MixExecutor(processed_code_dict, orig, end, ms)
-    me.go(True)
-    mixlog(MDEBUG, "finished executing")
-    for n in range (2000, 2500):
-        print("M:", partstodec_withsign(ms.getMemory(n)))
+    me.go(False)
+    mixlog(MINFO, "finished executing")
+    for i in range(2000, 2500):
+        mixlog(MINFO, "M"+str(i)+":", partstodec_withsign(ms.getMemory(i)))
     print("A:", ms.getA())
     print("X:", ms.getX())
     print("i1", ms.geti1())

@@ -1,6 +1,7 @@
 from sm import MySM
 from utility import *
 from mixstatement import *
+from logger import *
 
 # return (sym, AA, I, F, op, C)
 class MixToMachineCodeTranslatorSM(MySM):
@@ -34,7 +35,7 @@ class MixToMachineCodeTranslatorSM(MySM):
             if (self.op in statementdict):
                 self.c = statementdict[self.op]
             else:
-                print('no such op:'+self.op)
+                mixlog(MINFO, 'no such op:'+self.op)
         elif (s == "addr" and inp == "-"):
             self.sym = "-"
             self.aa = self.aa + inp

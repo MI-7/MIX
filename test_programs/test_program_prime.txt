@@ -1,9 +1,8 @@
-L       EQU     5
 TMP     EQU     1999
 PRIME   EQU     2000
         ORIG    3000
         ENT1    2
-        STA     PRIME
+        ST1     PRIME
         ENT1    1
         ENT2    1
         ENT3    500
@@ -15,6 +14,7 @@ TEST    ENTA    0
         DIV     TMP
         JXZ     START
         INC4    1
+        ST4     TMP
         CMP1    TMP
         JE      STPRIME
         JMP     TEST

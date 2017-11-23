@@ -54,7 +54,7 @@ class MemoryState:
         self.overload_switch = 0       # 1=overload / 0=not-overload
         self.comparison_indicator = '' # L / E / G
 
-        self.memory = [['+', 0, 0, 0, 0, 0]] * memory_space
+        self.memory = [['+', 0, 0, 0, 0, 0] for i in range(0, memory_space)]
         self.tape = [0] * tape_space
 
     def __str__(self):

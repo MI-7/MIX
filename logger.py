@@ -4,9 +4,10 @@ import inspect
 MDEBUG = 2
 MINFO = 1
 MERROR = 0
-MIX_LOG_LEVEL = MDEBUG
+MIX_LOG_LEVEL = MINFO
 
 LOG_FILE = './log.log'
+f_logger = open(LOG_FILE, 'a')
 
 # 0-7, level
 # 8 - 15, time
@@ -27,9 +28,8 @@ def mixlog(level, *message):
         callername = caller[1][3]
         header = header + callername.ljust(15) + '    '
         
-        f = open(LOG_FILE, 'a')
-        print(header, message, file=f)
-        f.close()
+        print(header, message, file=f_logger)
+        f_logger.flush()
 
 if __name__ == "__main__":
     mixlog(MDEBUG, "test")

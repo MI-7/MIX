@@ -31,9 +31,8 @@ class LittleExtractStringSM(MySM):
         return state == 'end'
 
 class MixALPreProcessor():
-    def __init__(self, mix_code, memory):
+    def __init__(self, mix_code):
         self.mix_code = mix_code
-        self.memory = memory
         self.orig = 0
         self.end = 0
         self.symboltable = {}
