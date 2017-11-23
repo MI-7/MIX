@@ -840,10 +840,51 @@ def test_prime(fname):
     print("i6", ms.geti6())
     print("cmp", ms.getcomparisonindicator())
 
+def testGetMaxNum():
+    code_text_in_list = []
+    ms = MemoryState()
+    
+    f = open('./test_programs/test_program_win.txt', 'r')
+    with f:
+        code_text_in_list = f.read().splitlines()
+        #print(self.code_text_in_list)
+    f.close()
+        
+    mapp = MixALPreProcessor(code_text_in_list)
+    mapp.preprocessall()
+    processed_code = mapp.processed_code
+    processed_code_dict = mapp.processed_code_dict
+    orig = mapp.orig
+    end = mapp.end
+    
+    mixlog(MINFO, "finished preprocessing")
+
+    # load everything into memory
+    for line in processed_code_dict.keys():
+        sm = MixToMachineCodeTranslatorSM()
+        sm.transduce([x for x in processed_code_dict[line]], False)
+        (sym, aa, i, f, op, c) = sm.output
+        aa = dectobin(my_int(aa), 2)
+        ms.setMemory(line, [sym] + aa + [i, f, c])
+
+    me = MixExecutor(processed_code_dict, orig, end, ms)
+    me.go(False)
+    mixlog(MINFO, "finished executing")
+    print("A:", ms.getA())
+    print("X:", ms.getX())
+    print("i1", ms.geti1())
+    print("i2", ms.geti2())
+    print("i3", ms.geti3())
+    print("i4", ms.geti4())
+    print("i5", ms.geti5())
+    print("i6", ms.geti6())
+    print("cmp", ms.getcomparisonindicator())
+
 def testExecutor():
     #testWithAFile(fname = './test_programs/test_program_char.txt')
     #test_char_and_shift('./test_programs/exercise_1.3.24.txt')
-    test_prime('./test_programs/test_program_prime.txt')
+    #test_prime('./test_programs/test_program_prime.txt')
+    testGetMaxNum()
 
 # LDA 2000, 2(0:3)
 # LDA 2000, 2(1:3)
