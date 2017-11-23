@@ -79,6 +79,7 @@ statementdict ={
                 'DEC5'      : 78,
                 'DEC6'      : 79,
                 'CMPA'      : 80,
+                'CMPX'      : 81,
                 'CMP1'      : 82,
                 'CMP2'      : 83,
                 'CMP3'      : 84,
@@ -184,6 +185,13 @@ statementprofilingdict =   {
                             'MOVE'      : 1,  # 1 + 2 * each word moved
                             'NUM'       : 10,
                             'CHAR'      : 10,
+                            'CMPX'      : 1,
+                            'CMP1'      : 1,
+                            'CMP2'      : 1,
+                            'CMP3'      : 1,
+                            'CMP4'      : 1,
+                            'CMP5'      : 1,
+                            'CMP6'      : 1,
                             'SLA'       : 1,
                             'SRA'       : 1,
                             'SLAX'      : 1,
@@ -277,6 +285,7 @@ OP_DEC4=77
 OP_DEC5=78
 OP_DEC6=79
 OP_CMPA=80
+OP_CMPX=81
 OP_CMP1=82
 OP_CMP2=83
 OP_CMP3=84

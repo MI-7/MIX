@@ -2,18 +2,19 @@ import sys, os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from memorystate import *
 import numpy as np
-from mixsm import MixSM
-from nextstatementsm import NextStatementSM
-from autoexecutesm import AutoExecuteSM
 from utility import *
 from codeeditor import CodeEditor
+from mixaltomachinecode import *
+from mixalpreprocessor import *
+from mixexecutor import *
 
 class App(QMainWindow):
  
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 simple window - pythonspot.com'
+        self.title = 'PyQt5 simple window'
         self.left = 10
         self.top = 10
         self.width = 1024
@@ -23,8 +24,7 @@ class App(QMainWindow):
         self.code_to_execute = ""
         self.code_text = ""
         self.code_text_in_list = []
-        self.next_stmt_sm = None
-        self.mix_sm = None
+        self.memory = MemoryState()
         self.initUI()
  
     @pyqtSlot()
@@ -55,14 +55,11 @@ class App(QMainWindow):
     def on_click_start(self):
         self.current_line = 0
         self.total_line = self.textbox_code.document().lineCount()
-        
-        self.mix_sm = MixSM()
-        self.mix_sm.start()
-        self.next_stmt_sm = NextStatementSM(self.code_text_in_list, self.current_line)
-        self.next_stmt_sm.start()
-        
+
         cur = QTextCursor(self.textbox_code.document().findBlockByLineNumber(self.current_line))
         self.textbox_code.setTextCursor(cur)
+        
+        self.memory = MemoryState()
         
         print("total:"+str(self.total_line)+"current:"+str(self.current_line))
     
@@ -82,18 +79,43 @@ class App(QMainWindow):
                 self.current_line = 0
                 self.total_line = self.textbox_code.document().lineCount()
                 
-                self.mix_sm = MixSM()
-                self.mix_sm.start()
-                self.next_stmt_sm = NextStatementSM(self.code_text_in_list, self.current_line)
-                self.next_stmt_sm.start()
-                
                 print("total:"+str(self.total_line)+"current:"+str(self.current_line))
             f.close()
+
     @pyqtSlot()
     def on_click_go(self):
-        autosm = AutoExecuteSM(NextStatementSM(self.code_text_in_list, 0), MixSM())
-        autosm.start()
-        autosm.go(True)
+        mapp = MixALPreProcessor(self.code_text_in_list, self.memory)
+        mapp.preprocessall()
+        processed_code = mapp.processed_code
+        processed_code_dict = mapp.processed_code_dict
+        orig = mapp.orig
+        end = mapp.end
+        
+        mixlog(MDEBUG, "finished preprocessing")
+        
+        # load everything into memory
+        for line in processed_code_dict.keys():
+            sm = MixToMachineCodeTranslatorSM()
+            sm.transduce([x for x in processed_code_dict[line]], False)
+            (sym, aa, i, f, op, c) = sm.output
+            aa = dectobin(my_int(aa), 2)
+            self.memory.setMemory(line, [sym] + aa + [i, f, c])
+    
+        me = MixExecutor(processed_code_dict, orig, end, self.memory)
+        me.go(True)
+        mixlog(MDEBUG, "finished executing")
+        #for n in range (3000, 3050):
+            #print("M:", ms.getMemory(n))
+        print("M:", self.memory.getMemory(2000))
+        print("A:", self.memory.getA())
+        print("X:", self.memory.getX())
+        print("i1", self.memory.geti1())
+        print("i2", self.memory.geti2())
+        print("i3", self.memory.geti3())
+        print("i4", self.memory.geti4())
+        print("i5", self.memory.geti5())
+        print("i6", self.memory.geti6())
+        print("cmp", self.memory.getcomparisonindicator())
     
     def initUI(self):
         self.setWindowTitle(self.title)

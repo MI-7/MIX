@@ -557,7 +557,39 @@ class MixExecutor(MySM):
                 self.memory.setcomparisonindicator(COMP_EQAL)
             else:
                 self.memory.setcomparisonindicator(COMP_LESS)
-        
+
+        if (c == OP_CMPX):
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            aa = aa + m_shift
+            m = self.memory.getMemory(aa)
+            x = self.memory.getX()
+            (L, R) = LRFROMF(f)
+            
+            x_cmp = 0
+            m_cmp = 0
+            if (L == 0):
+                m_sign = m[0]
+                x_sign = x[0]
+                
+                m_seg = m[L+1:R+1]
+                x_seg = x[L+1:R+1]
+                
+                x_cmp = partstodec_withsign([x_sign]+x_seg)
+                m_cmp = partstodec_withsign([m_sign]+m_seg)
+            else:
+                m_seg = m[L:R+1]
+                x_seg = x[L:R+1]
+                
+                x_cmp = partstodec(x_seg)
+                m_cmp = partstodec(m_seg)
+
+            if (x_cmp > m_cmp):
+                self.memory.setcomparisonindicator(COMP_GRET)
+            elif(x_cmp == m_cmp):
+                self.memory.setcomparisonindicator(COMP_EQAL)
+            else:
+                self.memory.setcomparisonindicator(COMP_LESS)
+
         if (c >= OP_CMP1 and c <= OP_CMP6):
             j = c - OP_CMP1 + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
@@ -573,7 +605,7 @@ class MixExecutor(MySM):
                 self.memory.setcomparisonindicator(COMP_EQAL)
             else:
                 self.memory.setcomparisonindicator(COMP_LESS)
-        
+
         if (c == OP_MOVE):
             m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
             i1 = partstodec_withsign(getattr(self.memory, 'geti'+str(1))())
