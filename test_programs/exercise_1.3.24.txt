@@ -1,0 +1,5 @@
+        ORIG    3000
+INIT    LDA     1200
+        LDX     1201
+        SLAX    1
+        END     INIT

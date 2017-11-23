@@ -496,10 +496,28 @@ class MixExecutor(MySM):
                 m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
                 next_statement = aa + m_shift
         
+        if (c == OP_JE):
+            indi = self.memory.getcomparisonindicator()
+            if (indi == COMP_EQAL):
+                next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+        
         if (c == OP_JGE):
             indi = self.memory.getcomparisonindicator()
             if (indi == COMP_GRET or indi == COMP_EQAL):
                 next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+        
+        if (c == OP_JXZ):
+            x = partstodec_withsign(self.memory.getX())
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            if (x == 0):
+                next_statement = aa + m_shift
+        
+        if (c >= OP_J1Z and c <= OP_J6Z):
+            j = c - OP_J1Z + 1
+            rj = partstodec_withsign(getattr(self.memory, 'geti'+str(j))())
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            if (rj == 0):
+                next_statement = aa + m_shift
         
         if (c == OP_J1P or c == OP_J2P or c == OP_J3P or c == OP_J4P or c == OP_J5P or c == OP_J6P):
             j = c - OP_J1P + 1
@@ -536,6 +554,22 @@ class MixExecutor(MySM):
             if (a_cmp > m_cmp):
                 self.memory.setcomparisonindicator(COMP_GRET)
             elif(a_cmp == m_cmp):
+                self.memory.setcomparisonindicator(COMP_EQAL)
+            else:
+                self.memory.setcomparisonindicator(COMP_LESS)
+        
+        if (c >= OP_CMP1 and c <= OP_CMP6):
+            j = c - OP_CMP1 + 1
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti'+str(i))())
+            aa = aa + m_shift
+            m = self.memory.getMemory(aa)
+            
+            m_cmp = partstodec_withsign([m[0]] + m[4:6])
+            rj = partstodec_withsign(getattr(self.memory, 'geti'+str(j))())
+            
+            if (rj > m_cmp):
+                self.memory.setcomparisonindicator(COMP_GRET)
+            elif(rj == m_cmp):
                 self.memory.setcomparisonindicator(COMP_EQAL)
             else:
                 self.memory.setcomparisonindicator(COMP_LESS)
@@ -584,15 +618,17 @@ class MixExecutor(MySM):
             a_num = a_num >> aa * BYTE_WIDTH
             mixlog(MDEBUG, "op=after sra..a_num=", bin(abs(a_num))[2:].zfill(WORD_WIDTH * BYTE_WIDTH))
             self.memory.saveA([a[0]] + dectobin_right(a_num, WORD_WIDTH))
-        
+
         if (c == OP_SLAX):
             a = self.memory.getA()
             x = self.memory.getX()
-            ax_num = partstodec(a[1:] + x[1:]) << aa * BYTE_WIDTH
+            #ax_num = partstodec(a[1:] + x[1:]) << aa * BYTE_WIDTH
+            #ax_num = rotatearrayleft_n(a[1:] + x[1:], aa % (2 * WORD_WIDTH))
+            ax_num = shiftarrayleft_n(a[1:] + x[1:], aa)
             
-            ax_list = dectobin_right(ax_num, 2 * WORD_WIDTH)
-            self.memory.saveA([a[0]] + ax_list[0:WORD_WIDTH])
-            self.memory.saveX([x[0]] + ax_list[WORD_WIDTH:])
+            #ax_list = dectobin(ax_num, 2 * WORD_WIDTH)
+            self.memory.saveA([a[0]] + ax_num[0:WORD_WIDTH])
+            self.memory.saveX([x[0]] + ax_num[WORD_WIDTH:])
         
         if (c == OP_SRAX):
             a = self.memory.getA()
@@ -607,6 +643,9 @@ class MixExecutor(MySM):
             pass
         
         if (c == OP_SRC):
+            pass
+        
+        if (c == OP_NOP):
             pass
 
         # generate profiling result
@@ -666,6 +705,99 @@ def testWithAFile(fname = './test_programs/exercise_1.3.22.txt'):
         #print("M:", ms.getMemory(n))
     print("M:", ms.getMemory(2000))
     print("A:", ms.getA())
+    print("A:", printchars(ms.getA()[1:]))
+    print("X:", ms.getX())
+    print("X:", printchars(ms.getX()[1:]))
+    print("i1", ms.geti1())
+    print("i2", ms.geti2())
+    print("i3", ms.geti3())
+    print("i4", ms.geti4())
+    print("i5", ms.geti5())
+    print("i6", ms.geti6())
+    print("cmp", ms.getcomparisonindicator())
+
+def test_char_and_shift(fname):
+    code_text_in_list = []
+    ms = MemoryState()
+
+    f = open(fname, 'r')
+    with f:
+        code_text_in_list = f.read().splitlines()
+        #print(self.code_text_in_list)
+    f.close()
+    
+    mapp = MixALPreProcessor(code_text_in_list, ms)
+    mapp.preprocessall()
+    processed_code = mapp.processed_code
+    processed_code_dict = mapp.processed_code_dict
+    orig = mapp.orig
+    end = mapp.end
+    
+    mixlog(MDEBUG, "finished preprocessing")
+    ms.setMemory(1200, ['+', 48, 97, 98, 99, 100])
+    ms.setMemory(1201, ['+', 101, 102, 103, 104, 105])
+    
+    # load everything into memory
+    for line in processed_code_dict.keys():
+        sm = MixToMachineCodeTranslatorSM()
+        sm.transduce([x for x in processed_code_dict[line]], False)
+        (sym, aa, i, f, op, c) = sm.output
+        aa = dectobin(my_int(aa), 2)
+        ms.setMemory(line, [sym] + aa + [i, f, c])
+
+    me = MixExecutor(processed_code_dict, orig, end, ms)
+    me.go(True)
+    mixlog(MDEBUG, "finished executing")
+    #for n in range (3000, 3050):
+        #print("M:", ms.getMemory(n))
+    print("M:", ms.getMemory(2000))
+    print("M 1200:", printchars(ms.getMemory(1200)[1:]))
+    print("M 1201:", printchars(ms.getMemory(1201)[1:]))
+    print("A:", ms.getA())
+    print("A:", printchars(ms.getA()[1:]))
+    print("X:", ms.getX())
+    print("X:", printchars(ms.getX()[1:]))
+    print("i1", ms.geti1())
+    print("i2", ms.geti2())
+    print("i3", ms.geti3())
+    print("i4", ms.geti4())
+    print("i5", ms.geti5())
+    print("i6", ms.geti6())
+    print("cmp", ms.getcomparisonindicator())
+
+def test_prime(fname):
+    code_text_in_list = []
+    ms = MemoryState()
+
+    f = open(fname, 'r')
+    with f:
+        code_text_in_list = f.read().splitlines()
+        #print(self.code_text_in_list)
+    f.close()
+    
+    mapp = MixALPreProcessor(code_text_in_list, ms)
+    mapp.preprocessall()
+    processed_code = mapp.processed_code
+    processed_code_dict = mapp.processed_code_dict
+    orig = mapp.orig
+    end = mapp.end
+    
+    mixlog(MDEBUG, "finished preprocessing")
+    
+    # load everything into memory
+    for line in processed_code_dict.keys():
+        sm = MixToMachineCodeTranslatorSM()
+        sm.transduce([x for x in processed_code_dict[line]], False)
+        (sym, aa, i, f, op, c) = sm.output
+        aa = dectobin(my_int(aa), 2)
+        ms.setMemory(line, [sym] + aa + [i, f, c])
+
+    me = MixExecutor(processed_code_dict, orig, end, ms)
+    me.go(True)
+    mixlog(MDEBUG, "finished executing")
+    for n in range (2000, 2500):
+        print("M:", partstodec_withsign(ms.getMemory(n)))
+    print("A:", ms.getA())
     print("X:", ms.getX())
     print("i1", ms.geti1())
     print("i2", ms.geti2())
@@ -676,7 +808,9 @@ def testWithAFile(fname = './test_programs/exercise_1.3.22.txt'):
     print("cmp", ms.getcomparisonindicator())
 
 def testExecutor():
-    testWithAFile(fname = './test_programs/test_program_shift.txt')
+    #testWithAFile(fname = './test_programs/test_program_char.txt')
+    #test_char_and_shift('./test_programs/exercise_1.3.24.txt')
+    test_prime('./test_programs/test_program_prime.txt')
 
 # LDA 2000, 2(0:3)
 # LDA 2000, 2(1:3)

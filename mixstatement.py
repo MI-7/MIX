@@ -35,7 +35,10 @@ statementdict ={
                 'JMP'       : 100,
                 'JOV'       : 102,
                 'JNOV'      : 103,
+                'JE'        : 105,
                 'JGE'       : 107,
+                'JXZ'       : 117,
+                'J3Z'       : 130,
                 'J1P'       : 134,
                 'J2P'       : 135,
                 'J3P'       : 136,
@@ -76,6 +79,12 @@ statementdict ={
                 'DEC5'      : 78,
                 'DEC6'      : 79,
                 'CMPA'      : 80,
+                'CMP1'      : 82,
+                'CMP2'      : 83,
+                'CMP3'      : 84,
+                'CMP4'      : 85,
+                'CMP5'      : 86,
+                'CMP6'      : 87,
                 'NUM'       : 200,
                 'CHAR'      : 201,
                 'SLA'       : 300,
@@ -122,7 +131,10 @@ statementprofilingdict =   {
                             'JMP'       : 1,
                             'JOV'       : 1,
                             'JNOV'      : 1,
+                            'JE'        : 1,
                             'JGE'       : 1,
+                            'JXZ'       : 1,
+                            'J3Z'       : 1,
                             'J1P'       : 1,
                             'J2P'       : 1,
                             'J3P'       : 1,
@@ -163,6 +175,12 @@ statementprofilingdict =   {
                             'DEC5'      : 1,
                             'DEC6'      : 1,
                             'CMPA'      : 1,
+                            'CMP1'      : 1,
+                            'CMP2'      : 1,
+                            'CMP3'      : 1,
+                            'CMP4'      : 1,
+                            'CMP5'      : 1,
+                            'CMP6'      : 1,
                             'MOVE'      : 1,  # 1 + 2 * each word moved
                             'NUM'       : 10,
                             'CHAR'      : 10,
@@ -210,7 +228,15 @@ OP_STZ=33
 OP_JMP=100
 OP_JOV=102
 OP_JNOV=103
+OP_JE=105
 OP_JGE=107
+OP_JXZ=117
+OP_J1Z=128
+OP_J2Z=129
+OP_J3Z=130
+OP_J4Z=131
+OP_J5Z=132
+OP_J6Z=133
 OP_J1P=134
 OP_J2P=135
 OP_J3P=136
@@ -251,6 +277,12 @@ OP_DEC4=77
 OP_DEC5=78
 OP_DEC6=79
 OP_CMPA=80
+OP_CMP1=82
+OP_CMP2=83
+OP_CMP3=84
+OP_CMP4=85
+OP_CMP5=86
+OP_CMP6=87
 OP_NUM=200
 OP_CHAR=201
 

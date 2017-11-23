@@ -1,5 +1,4 @@
         ORIG    3000
 INIT    ENTA    4095
         CHAR    0
-        NUM     0
         END     INIT

@@ -4,6 +4,46 @@ BYTE_WIDTH = 6
 MAX_BYTE_HOLDING = 2 ** BYTE_WIDTH - 1
 MAX_NUMBER = 2 ** (BYTE_WIDTH * WORD_WIDTH) - 1
 
+def shiftarrayleft(num):
+    return num[1:] + [0]
+
+def shiftarrayright(num):
+    return [0] + num[0:-1]
+
+def shiftarrayleft_n(num, n):
+    l = num
+    for i in range(0, n):
+        l = shiftarrayleft(l)
+    return l
+
+def shiftarrayright_n(num, n):
+    l = num
+    for i in range(0, n):
+        l = shiftarrayright(l)
+    return l
+
+def rotatearrayleft(num):
+    return num[1:] + [num[0]]
+
+def rotatearraryright(num):
+    return [num[-1]] + num[0:-1]
+
+def rotatearrayleft_n(num, n):
+    l = num
+    for i in range(0, n):
+        l = rotatearrayleft(l)
+    return l
+
+def rotatearraryright_n(num, n):
+    l = num
+    for i in range(0, n):
+        l = rotatearraryright(l)
+    return l
+
+# taks integer list
+def printchars(num):
+    return [chr(i) for i in num]
+
 # 2000 -> [31][16]
 def dectobin(num, width, byte_width = BYTE_WIDTH):
     s = bin(num)[2:].zfill(width * byte_width)
@@ -93,5 +133,5 @@ if __name__ == "__main__":
     print(dectobin(12977699, 5))
     print(dectobin_right(68702699520, 5))
     print(dectobin_withsign(-12933883, 5))
-    print(partstodec([1,2,3,4,5,6,7,8,9,10]))
+    print(partstodec([5, 35, 50, 25, 28, 54, 31, 17, 41, 0]))
     print(LPLUSR(12, 3))

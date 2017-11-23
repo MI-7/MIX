@@ -33,6 +33,8 @@ class MixToMachineCodeTranslatorSM(MySM):
             s = "addr"
             if (self.op in statementdict):
                 self.c = statementdict[self.op]
+            else:
+                print('no such op:'+self.op)
         elif (s == "addr" and inp == "-"):
             self.sym = "-"
             self.aa = self.aa + inp
