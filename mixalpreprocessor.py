@@ -50,7 +50,13 @@ class MixALPreProcessor():
         for s in self.mix_code:
             loc = ''.join(s[0:7].split())
             op = ''.join(s[8:15].split())
-            addr = ''.join(s[16:].split())
+            
+            comment_pos = s.find("#")
+            addr = ''
+            if (comment_pos == -1):
+                addr = ''.join(s[16:].split())
+            else:
+                addr = ''.join(s[16:comment_pos].split())
             
             loc.upper()
             op.upper()
@@ -89,7 +95,13 @@ class MixALPreProcessor():
         for s in self.mix_code:
             loc = ''.join(s[0:7].split())
             op = ''.join(s[8:15].split())
-            addr = ''.join(s[16:].split())
+            
+            comment_pos = s.find("#")
+            addr = ''
+            if (comment_pos == -1):
+                addr = ''.join(s[16:].split())
+            else:
+                addr = ''.join(s[16:comment_pos].split())
             
             loc.upper()
             op.upper()
@@ -131,7 +143,7 @@ class MixALPreProcessor():
         #mixlog(MDEBUG, "runtime symbol table:", self.runtime_symboltable)
         mixlog (MDEBUG, 'symbol table:', self.symboltable)
         mixlog (MDEBUG, 'processed code:', self.processed_code)
-        mixlog(MDEBUG, "processed code dict:", self.processed_code_dict)
+        mixlog (MDEBUG, "processed code dict:", self.processed_code_dict)
     
     def preprocess(self, statement):
         pass

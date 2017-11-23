@@ -2,25 +2,25 @@ TMP     EQU     1999
 PRIME   EQU     2000
         ORIG    3000
         ENT1    2
-        ST1     PRIME
-        ENT1    1
-        ENT2    1
-        ENT3    500
-START   INC1    2
-        ENT4    2
+        ST1     PRIME       # 2 is by default a prime
+        ENT1    1           # rI1 holds the next number to be verified
+        ENT2    1           # rI2 is addr reg for saving prime numbers, see line 21
+        ENT3    100         # number of prime numbers to be found
+START   INC1    2           # next number to be tested
+        ENT4    2           # rI1 / rI4 to test
 TEST    ENTA    0
-        ENTX    0,1
+        ENTX    0,1         # rI1 -> rAX
+        ST4     TMP         # rI4 -> memory
+        DIV     TMP         # rI1 / rI4
+        JXZ     START       # can be divided, not prime number
+        INC4    1           # increase rI4, do test again
         ST4     TMP
-        DIV     TMP
-        JXZ     START
-        INC4    1
-        ST4     TMP
-        CMP1    TMP
-        JE      STPRIME
-        JMP     TEST
-STPRIME ST1     PRIME,2
-        INC2    1
-        DEC3    1
-        J3Z     FIN
-        JMP     START
+        CMP1    TMP         
+        JE      STPRIME     # the test is over, is a prime
+        JMP     TEST        # continue test
+STPRIME ST1     PRIME,2     # rI1 the prime number -> memory(PRIME+rI2)
+        INC2    1           # rI2 + 1
+        DEC3    1           # 500 - 1 ... - 1 ... -> 0
+        J3Z     FIN         # if calculated 500 already -> FIN
+        JMP     START       # finished saving prime number, go increase rI1 by 2
 FIN     END     START
