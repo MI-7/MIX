@@ -26,7 +26,7 @@ class App(QMainWindow):
         self.code_text_in_list = []
         self.memory = MemoryState()
         self.initUI()
- 
+
     @pyqtSlot()
     def on_click_step(self):
         (self.code_to_execute, self.current_line) = self.next_stmt_sm.step(undef)
@@ -50,7 +50,7 @@ class App(QMainWindow):
         selection.cursor.clearSelection()
         extraSelections.append(selection)
         #self.textbox_code.setExtraSelections(extraSelections)
-            
+
     @pyqtSlot()
     def on_click_start(self):
         self.current_line = 0

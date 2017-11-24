@@ -849,7 +849,7 @@ def testGetMaxNum():
         code_text_in_list = f.read().splitlines()
         #print(self.code_text_in_list)
     f.close()
-        
+
     mapp = MixALPreProcessor(code_text_in_list)
     mapp.preprocessall()
     processed_code = mapp.processed_code
