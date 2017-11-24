@@ -4,9 +4,9 @@ import inspect
 MDEBUG = 2
 MINFO = 1
 MERROR = 0
-MIX_LOG_LEVEL = MINFO
+MIX_LOG_LEVEL = MDEBUG
 
-LOG_FILE = './log.log'
+LOG_FILE = 'log.log'
 f_logger = open(LOG_FILE, 'a')
 
 # 0-7, level

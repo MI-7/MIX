@@ -8,6 +8,6 @@ if __name__ == '__main__':
     sG = QApplication.desktop().screenGeometry()
     x = (sG.width()-ex.width) / 2
     y = (sG.height()-ex.height) / 2
-    ex.move(x,y)
+    ex.move(x, y)
     
     sys.exit(app.exec_())
