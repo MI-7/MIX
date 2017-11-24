@@ -23,4 +23,5 @@ STPRIME ST1     PRIME,2     # rI1 the prime number -> memory(PRIME+rI2)
         DEC3    1           # 500 - 1 ... - 1 ... -> 0
         J3Z     FIN         # if calculated 500 already -> FIN
         JMP     START       # finished saving prime number, go increase rI1 by 2
-FIN     END     START
+FIN     OUT     2000,8(62:4)
+E       END     START

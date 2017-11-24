@@ -1,10 +1,7 @@
 X       EQU     1000
         ORIG    3000
-        ENTA    100
-        STA     1000
-        ENTA    99
-        STA     1001
-        ENT1    2
+        IN      X
+        ENT1    6
         JMP     MAX
         INCA    1
         END     INIT

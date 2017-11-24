@@ -3,6 +3,7 @@ from mixaltomachinecode import *
 from mixalpreprocessor import *
 from sm import MySM
 from utility import *
+from blockdevice import *
 
 # execute single line of code
 class MixExecutor(MySM):
@@ -681,6 +682,17 @@ class MixExecutor(MySM):
         if (c == OP_NOP):
             pass
 
+        if (c == OP_IN):
+            d_con = read_from_inputdevice()
+            aa_tmp = aa
+            
+            for d in d_con:
+                self.memory.setMemory(aa_tmp, d)
+                aa_tmp = aa_tmp + 1
+        
+        if (c == OP_OUT):
+            write_into_outputdevice(self.memory.getMemorySegment(aa, f), i)
+
         # generate profiling result
         if (op in statementprofilingdict):
             t = statementprofilingdict[op]
@@ -828,8 +840,7 @@ def test_prime(fname):
     me = MixExecutor(processed_code_dict, orig, end, ms)
     me.go(False)
     mixlog(MINFO, "finished executing")
-    for i in range(2000, 2500):
-        mixlog(MINFO, "M"+str(i)+":", partstodec_withsign(ms.getMemory(i)))
+
     print("A:", ms.getA())
     print("X:", ms.getX())
     print("i1", ms.geti1())
@@ -883,8 +894,8 @@ def testGetMaxNum():
 def testExecutor():
     #testWithAFile(fname = './test_programs/test_program_char.txt')
     #test_char_and_shift('./test_programs/exercise_1.3.24.txt')
-    #test_prime('./test_programs/test_program_prime.txt')
-    testGetMaxNum()
+    test_prime('./test_programs/test_program_prime.txt')
+    #testGetMaxNum()
 
 # LDA 2000, 2(0:3)
 # LDA 2000, 2(1:3)

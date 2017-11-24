@@ -93,6 +93,9 @@ class MemoryState:
         
         return result
 
+    def getMemorySegment(self, addr, n):
+        return self.memory[addr:addr+n]
+
     def getMemory(self, addr):
         return self.memory[addr]
     

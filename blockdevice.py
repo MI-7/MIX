@@ -13,8 +13,8 @@ def read_from_inputdevice():
     
     return [dectobin_withsign(int(i), WORD_WIDTH) for i in inputs_in_list]
 
-def write_into_outputdevice(contents):
-    f = open(output_file, 'w')
+def write_into_outputdevice(contents, i):
+    f = open(output_file+str(i), 'w')
     for c in contents:
         print(partstodec_withsign(c), file=f)
     f.close()

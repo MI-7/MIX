@@ -94,6 +94,8 @@ statementdict ={
                 'SRAX'      : 303,
                 'SLC'       : 304,
                 'SRC'       : 305,
+                'IN'        : 666,
+                'OUT'       : 888,
                 }
 
 statementprofilingdict =   {
@@ -198,6 +200,8 @@ statementprofilingdict =   {
                             'SRAX'      : 1,
                             'SLC'       : 1,
                             'SRC'       : 1,
+                            'IN'        : 10,
+                            'OUT'       : 10,
                             }
 
 OP_NOP=0
@@ -301,3 +305,5 @@ OP_SLAX=302
 OP_SRAX=303
 OP_SLC=304
 OP_SRC=305
+OP_IN=666
+OP_OUT=888
