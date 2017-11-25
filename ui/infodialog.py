@@ -18,7 +18,7 @@ class InfoDialog(QDialog):
         self.label.setText(u"MUHAHAHAHAHAHAHAHAHA")
 
         pe = QPalette()
-        pe.setColor(QPalette.WindowText,Qt.red)
+        pe.setColor(QPalette.WindowText, Qt.red)
         self.label.setAutoFillBackground(True)
         #pe.setColor(QPalette.Window,Qt.green)  
         #pe.setColor(QPalette.Background,Qt.blue)  

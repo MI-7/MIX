@@ -1,9 +1,10 @@
-from memorystate import *
-from mixaltomachinecode import *
-from mixalpreprocessor import *
-from sm import MySM
-from utility import *
-from blockdevice import *
+from mixinterpreter.memorystate import *
+from mixinterpreter.mixalpreprocessor import *
+from mixinterpreter.mixaltomachinecode import *
+
+from mixinterpreter.blockdevice import *
+from mixinterpreter.sm import MySM
+
 
 # execute single line of code
 class MixExecutor(MySM):

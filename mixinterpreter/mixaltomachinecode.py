@@ -1,7 +1,8 @@
-from sm import MySM
-from utility import *
-from mixstatement import *
+from mixinterpreter.mixstatement import *
 from logger import *
+from mixinterpreter.sm import MySM
+from utility import *
+
 
 # return (sym, AA, I, F, op, C)
 class MixToMachineCodeTranslatorSM(MySM):

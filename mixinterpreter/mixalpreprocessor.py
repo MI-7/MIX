@@ -1,11 +1,12 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from memorystate import MemoryState
+from mixinterpreter.memorystate import MemoryState
 from utility import *
 from logger import *
-from sm import MySM
+from mixinterpreter.sm import MySM
+
+from logger import *
+from mixinterpreter.sm import MySM
+from utility import *
+
 
 class LittleExtractStringSM(MySM):
     def __init__(self):

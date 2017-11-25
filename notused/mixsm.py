@@ -1,5 +1,7 @@
-from sm import MySM
 from memorystate import MemoryState
+
+from mixinterpreter.sm import MySM
+
 
 class MixSM(MySM):
     def __init__(self):

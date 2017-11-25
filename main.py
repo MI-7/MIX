@@ -1,3 +1,4 @@
+import sys
 from ui.app import *
 from PyQt5.QtWidgets import QApplication
  

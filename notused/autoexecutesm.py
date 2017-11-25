@@ -1,7 +1,9 @@
-from sm import MySM
 from mixsm import MixSM
 from nextstatementsm import NextStatementSM
+
+from mixinterpreter.sm import MySM
 from utility import *
+
 
 class AutoExecuteSM(MySM):
     def __init__(self, sm_code, sm_executor):

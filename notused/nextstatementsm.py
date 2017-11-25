@@ -1,4 +1,4 @@
-from sm import MySM
+from mixinterpreter.sm import MySM
 from utility import *
 
 class NextStatementSM(MySM):
