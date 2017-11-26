@@ -1,6 +1,6 @@
-TMP     EQU     1999
-PRIME   EQU     2000
-        ORIG    3000
+TMP     EQU     0
+PRIME   EQU     25
+        ORIG    1
         ENT1    2
         ST1     PRIME       # 2 is by default a prime
         ENT1    1           # rI1 holds the next number to be verified
@@ -23,5 +23,5 @@ STPRIME ST1     PRIME,2     # rI1 the prime number -> memory(PRIME+rI2)
         DEC3    1           # 500 - 1 ... - 1 ... -> 0
         J3Z     FIN         # if calculated 500 already -> FIN
         JMP     START       # finished saving prime number, go increase rI1 by 2
-FIN     OUT     2000,8(62:4)
+FIN     OUT     PRIME,8(62:4)
 E       END     START

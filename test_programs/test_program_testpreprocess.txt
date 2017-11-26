@@ -1,0 +1,13 @@
+L       EQU     500
+NEWLINE EQU     4:5
+A       EQU     L + 3
+B       EQU     L - 3
+C       EQU     L * 3
+D       EQU     L / 2
+        ORIG    3000 + L
+        ST2     L + A, 1
+        JMP     @ - 2
+        ENT4    L + 10, 1 (NEWLINE)
+        ENT4    L * 2 (NEWLINE)
+        ENT4    L + 100
+        ENT4    L + 200, 1

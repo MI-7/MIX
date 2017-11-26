@@ -15,6 +15,7 @@ class MixMainWindow(QMainWindow):
         self.height = 960
         self.current_line = 0
         self.total_line = 0
+        self.profile_start = 4000
         self.code_to_execute = ""
         self.code_text = ""
         self.code_text_in_list = []
@@ -22,6 +23,36 @@ class MixMainWindow(QMainWindow):
         self.me = None
         self.initUI()
         self.load_memory_into_display()
+
+    # 4001 -> 5000 holds profiling records
+    def load_profiling_results(self):
+        i = self.profile_start
+
+        self.tableWidget.setItem(i, 0, QTableWidgetItem('Line'))
+        self.tableWidget.setItem(i, 1, QTableWidgetItem('Code'))
+        self.tableWidget.setItem(i, 2, QTableWidgetItem('Times'))
+        self.tableWidget.setItem(i, 3, QTableWidgetItem('Unit'))
+        self.tableWidget.setItem(i, 4, QTableWidgetItem('Total'))
+        i = i + 1
+
+        total_total_time = 0
+        dict_line_result = {}
+        for key in self.me.profilingresult.keys():
+            code, times, unit_time, total_time = self.me.profilingresult[key]
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(key)))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem(code))
+            self.tableWidget.setItem(i, 2, QTableWidgetItem(str(times)))
+            self.tableWidget.setItem(i, 3, QTableWidgetItem(str(unit_time)))
+            self.tableWidget.setItem(i, 4, QTableWidgetItem(str(total_time)))
+            dict_line_result[i] = total_time
+            i = i + 1
+            total_total_time = total_total_time + total_time
+            # self.profilingresult[current_line] = (self.processed_code_dict[current_line], 1, unit, unit)
+
+        self.tableWidget.setItem(i, 4, QTableWidgetItem(str(total_total_time)))
+        for key in dict_line_result.keys():
+            self.tableWidget.setItem(key, 5, QTableWidgetItem(str(100 * dict_line_result[key] / total_total_time)[0:6] + '%'))
+        self.tableWidget.selectRow(i)
 
     def load_memory_into_display(self):
         num_mode = NUM_MODE_DEC
@@ -91,6 +122,7 @@ class MixMainWindow(QMainWindow):
             self.tableWidget.setItem(i, 3, QTableWidgetItem(str(m[3])))
             self.tableWidget.setItem(i, 4, QTableWidgetItem(str(m[4])))
             self.tableWidget.setItem(i, 5, QTableWidgetItem(str(m[5])))
+            self.tableWidget.setItem(i, 6, QTableWidgetItem(str(partstodec_withsign(m))))
 
     @pyqtSlot()
     def on_click_debug(self):
@@ -117,6 +149,7 @@ class MixMainWindow(QMainWindow):
         self.me = MixExecutor(processed_code_dict, orig, end, self.memory)
         self.me.start()
         mixlog(MDEBUG, "finished executing")
+        self.tableWidget.clearContents()
         self.load_memory_into_display()
 
         self.action_debug.setEnabled(False)
@@ -185,10 +218,11 @@ class MixMainWindow(QMainWindow):
 
         if next_line == self.me.end:
             self.on_click_stop()
+            self.load_profiling_results()
 
     @pyqtSlot()
     def on_click_open(self):
-        opened_file_name = QFileDialog.getOpenFileName(self, 'Open file', '~/test_programs/', "Program Files (*.*)")
+        opened_file_name = QFileDialog.getOpenFileName(self, 'Open file', 'test_programs/', "Program Files (*.*)")
         if opened_file_name[0] != '':
             f_opened = open(opened_file_name[0], 'r')
             with f_opened:
@@ -202,14 +236,14 @@ class MixMainWindow(QMainWindow):
                 self.current_line = 0
                 self.total_line = self.textbox_code.document().lineCount()
 
-                print("total:" + str(self.total_line) + "current:" + str(self.current_line))
+                # print("total:" + str(self.total_line) + "current:" + str(self.current_line))
             f_opened.close()
 
-        self.action_debug.setEnabled(True)
-        self.action_step.setEnabled(False)
-        self.action_resume.setEnabled(False)
-        self.action_stop.setEnabled(False)
-        self.action_run.setEnabled(True)
+            self.action_debug.setEnabled(True)
+            self.action_step.setEnabled(False)
+            self.action_resume.setEnabled(False)
+            self.action_stop.setEnabled(False)
+            self.action_run.setEnabled(True)
 
     @pyqtSlot()
     def on_click_go(self):
@@ -229,10 +263,12 @@ class MixMainWindow(QMainWindow):
             aa = dectobin(my_int(aa), 2)
             self.memory.setMemory(line, [sym] + aa + [i, f, c])
 
-        me = MixExecutor(processed_code_dict, orig, end, self.memory)
-        me.go(True)
+        self.me = MixExecutor(processed_code_dict, orig, end, self.memory)
+        self.me.go(True)
         mixlog(MDEBUG, "finished executing")
+        self.tableWidget.clearContents()
         self.load_memory_into_display()
+        self.load_profiling_results()
 
     def initUI(self):
         # window layout
@@ -350,8 +386,8 @@ class MixMainWindow(QMainWindow):
         # self.textbox_code.setPlainText("abc"+os.linesep+"cde"+os.linesep+"fgh")
 
         self.tableWidget = QTableWidget()
-        self.tableWidget.setRowCount(4000)
-        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setRowCount(5000)
+        self.tableWidget.setColumnCount(7)
         self.tableWidget.setItem(0, 0, QTableWidgetItem("Cell (1,1)"))
         self.tableWidget.setItem(0, 1, QTableWidgetItem("Cell (1,2)"))
         self.tableWidget.setItem(1, 0, QTableWidgetItem("Cell (2,1)"))
@@ -401,6 +437,9 @@ class MixMainWindow(QMainWindow):
         grid.addWidget(self.space_label, 0, 13)
         grid.addWidget(self.space_label, 0, 14)
         grid.addWidget(self.space_label, 0, 15)
+        grid.addWidget(self.space_label, 0, 16)
+        grid.addWidget(self.space_label, 0, 17)
+        grid.addWidget(self.space_label, 0, 18)
 
         grid.addWidget(self.a_label, 1, 1)
         grid.addWidget(self.asym_label, 1, 2)
@@ -462,7 +501,7 @@ class MixMainWindow(QMainWindow):
         grid.addWidget(self.j5_label, 9, 4)
         grid.addWidget(self.jnum_label, 9, 5)
 
-        grid.addWidget(self.tableWidget, 10, 1, 1, 15)
+        grid.addWidget(self.tableWidget, 10, 1, 1, 18)
 
         # self.memory = [['+', 0, 0, 0, 0, 0] for i in range(0, memory_space)]
 

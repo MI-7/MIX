@@ -1,5 +1,0 @@
-        ORIG    3997
-INIT    ENT1    5
-        ST1     1
-        MOVE    0,0(62:32)
-        END     INIT

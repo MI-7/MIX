@@ -1,0 +1,7 @@
+L       EQU     30
+        ORIG    0
+INIT    ENTA    1
+        ENT1    1
+        ST1     20
+        ADD     20
+        END     INIT
