@@ -1,6 +1,17 @@
 # MIX
 For how to use, read mixexecutor.py, __main__ section.
-Required packages: PyQt5 and numpy to run the UI; Nothing required for others.
+Required packages: PyQt5 and numpy to run the UI; Nothing required for others.  SIP will be installed automatically while installing pyqt.
+  298  sudo pip3.6 install PyQt5
+  302  sudo pip3.6 install numpy
+
+https://www.riverbankcomputing.com/software/pyqt/intro
+PyQt is a set of Python v2 and v3 bindings for The Qt Company's Qt application framework and runs on all platforms supported by Qt including Windows, OS X, Linux, iOS and Android. PyQt5 supports Qt v5. PyQt4 supports Qt v4 and will build against Qt v5. The bindings are implemented as a set of Python modules and contain over 1,000 classes.
+
+The Qt Company no longer supports Qt v4. PyQt5 and Qt v5 are strongly recommended for all new development.
+
+PyQt is dual licensed on all supported platforms under the GNU GPL v3 and the Riverbank Commercial License. Unlike Qt, PyQt is not available under the LGPL. You can purchase the commercial version of PyQt here. More information about licensing can be found in the License FAQ.
+
+PyQt does not include a copy of Qt. You must obtain a correctly licensed copy of Qt yourself. However, binary wheels of the GPL version of PyQt5 are provided and these include a copy of the LGPL version of Qt.
 
 Mix Registers:
 rA: Accumulator (full word, five bytes and a sign).
