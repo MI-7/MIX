@@ -1,3 +1,4 @@
+import sys
 from logger import *
 from mixinterpreter.memorystate import MemoryState
 from mixinterpreter.sm import MySM
@@ -33,10 +34,10 @@ class LittleExtractAllWordsSM(MySM):
         self.word = ''
 
     def getNextValues(self, state, inp, verbose=False):
-        if state == 'start' and inp.isalpha():
+        if state == 'start' and (inp.isalpha() or inp.isnumeric()):
             state = 'alpha'
             self.word = self.word + inp
-        elif state == 'alpha' and inp.isalpha():
+        elif state == 'alpha' and (inp.isalpha() or inp.isnumeric()):
             self.word = self.word + inp
         else:
             state = 'start'
@@ -156,7 +157,11 @@ class MixALPreProcessor():
                 if '@' in symbol:
                     symbol = symbol.replace('@', str(current_line - orig_line - 1 + self.orig))
 
-                symbol = str(int(eval(symbol)))
+                try:
+                    symbol = str(int(eval(symbol)))
+                except Exception as err:
+                    mixlog(MERROR, 'symbol eval failure', err)
+                    sys.exit()
 
                 # deal with i, f part
                 comma_pos = addr.find(',')

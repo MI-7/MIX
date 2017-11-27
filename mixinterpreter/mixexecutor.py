@@ -157,7 +157,10 @@ class MixExecutor(MySM):
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
             (L, R) = LRFROMF(f)
-            getattr(self.memory, 'savei' + str(j))([m[0]] + m[L: R + 1])
+            r_content = getattr(self.memory, 'geti' + str(j))()
+            r_content[0] = m[0]
+            r_content[1:3] = m[4:6]
+            getattr(self.memory, 'savei' + str(j))(r_content)
 
         if (c == OP_LD1N or c == OP_LD2N or c == OP_LD3N or c == OP_LD4N or c == OP_LD5N or c == OP_LD6N):
             j = c - OP_LD1N + 1

@@ -11,3 +11,7 @@ D       EQU     L / 2
         ENT4    L * 2 (NEWLINE)
         ENT4    L + 100
         ENT4    L + 200, 1
+        JUMP    D3
+D3      ENT2    1
+        JUMP    D
+D       ENT3    1

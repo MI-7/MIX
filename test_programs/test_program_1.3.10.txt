@@ -1,0 +1,103 @@
+COL     EQU     0           # the place holding number of columns = 8
+ROW     EQU     1           # the place holding number of rows = 9
+M       EQU     2           # M is the memory of the matrix
+MLOC    EQU     95
+U       EQU     96          # U used for saving u (L+8i+j)
+V       EQU     97
+MODE    EQU     98          # mode indicator 0 (col mode)
+TEMP    EQU     99          # temp memory space
+        ORIG    100
+INIT    ENT1    0           # default value is 0
+        ENT2    1           # i=current row
+        ENT3    1           # j=current column
+        ENT4    1           # k=the moving row index for comparing
+        ENT5    1           # l=the moving col index for comparing
+        ENT6    9
+        ST6     ROW
+        ENT6    8
+        ST6     COL
+        STZ     MODE        # mode = 0
+        ENT6    M
+        ST6     MLOC
+        ENT6    0           # the index moving mode, 0 = moving in row, 1 = moving in col
+        IN      11
+        JMP     X
+A       CMP2    ROW
+        JNE     A1
+        CMP3    COL
+        JE      FIN         # i==9; j==8
+A1      CMP3    COL
+        JNE     A2
+        INC2    1           # i++
+        ENT3    1           # k=1
+        ST2     TEMP        # i -> temp
+        LD4     TEMP        # temp -> k
+        ENT5    1           # l=1
+        JMP     A3
+A2      INC3    1           # j++
+        ST3     TEMP        # j -> temp
+        LD5     TEMP        # temp -> l
+A3      CMP6    MODE        # ri6 == 0?
+        JE      X           # current mode = 0, go to col moving part
+        JMP     Y           # go to row moving part
+B       ENT4    1           # k = 1
+        ST3     TEMP        # j -> temp
+        LD5     TEMP        # temp -> l
+        ENT6    1           # mode set to 1
+        JMP     Y
+C       INC5    1           # l++
+        JMP     X
+D       INC4    1           # k++
+        JMP     Y
+X       ENTA    0,2         # i -> rA
+        MUL     COL         # 8*i
+        SLAX    5           # X->A
+        ADD     MLOC        # base (L) + 8*i
+        ST3     TEMP        # j -> temp
+        ADD     TEMP        # L + 8i + j
+        STA     U           # rA -> U
+        LD1     U           # u -> r1
+        ENTA    0,4         # k -> rA
+        MUL     COL         # 8*k
+        SLAX    5           # X->A
+        ADD     MLOC        # base (L) + 8*k
+        ST5     TEMP        # l -> temp
+        ADD     TEMP        # L + 8k + l
+        STA     V           # saving v
+        ST6     TEMP
+        LD6     V           # v -> ri8
+        LDA     0,1         # U -> rA
+        CMPA    0,6         # U and V?
+        LD6     TEMP
+        JG      A           # U > V -> A
+        CMP5    COL         # l & 8
+        JE      B           # row's smallest
+        JMP     C
+Y       ENTA    0,2         # i -> rA
+        MUL     COL         # 8*i
+        SLAX    5           # X->A
+        ADD     MLOC        # base (L) + 8*i
+        ST3     TEMP        # j -> temp
+        ADD     TEMP        # L + 8i + j
+        STA     U           # rA -> U
+        LD1     U           # u -> r7
+        ENTA    0,4         # k -> rA
+        MUL     COL         # 8*k
+        SLAX    5           # X->A
+        ADD     MLOC        # base (L) + 8*k
+        ST5     TEMP        # l -> temp
+        ADD     TEMP        # L + 8k + l
+        STA     V           # saving v
+        ST6     TEMP
+        LD6     V           # v -> ri8
+        LDA     0,1         # U -> rA
+        CMPA    0,6         # U and V?
+        LD6     TEMP
+        JL      X1          # U > V -> A
+        CMP4    ROW         # k == 9?
+        JE      SAVE        # found one
+        JMP     D
+X1      ENT6    0
+        JMP     A
+SAVE    ST1     V           # V is the answer
+FIN     END     INIT

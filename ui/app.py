@@ -1,3 +1,4 @@
+import traceback
 from mixinterpreter.mixexecutor import *
 from ui.codeeditor import CodeEditor
 from ui.infodialog import *
@@ -127,7 +128,22 @@ class MixMainWindow(QMainWindow):
     @pyqtSlot()
     def on_click_debug(self):
         mapp_debug = MixALPreProcessor(self.code_text_in_list)
-        mapp_debug.preprocessall()
+        try:
+            mapp_debug.preprocessall()
+        except Exception as err:
+            mixlog(MERROR, str(err))
+            # os._exit(1)
+            # nothing is impacted at the moment, just break
+            print(str(err))
+            dialog = InfoDialog('muhahaha')
+            sG = QApplication.desktop().screenGeometry()
+            x = (sG.width() - dialog.width()) / 2
+            y = (sG.height() - dialog.height()) / 2
+    
+            dialog.move(x, y)
+            dialog.exec_()
+            return
+        
         processed_code_dict = mapp_debug.processed_code_dict
         processed_code = mapp_debug.processed_code
         orig = mapp_debug.orig
@@ -182,7 +198,7 @@ class MixMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_click_info(self):
-        dialog = InfoDialog()
+        dialog = InfoDialog("MUHAHAHAHAHAHA")
         sG = QApplication.desktop().screenGeometry()
         x = (sG.width() - dialog.width()) / 2
         y = (sG.height() - dialog.height()) / 2
@@ -192,7 +208,13 @@ class MixMainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_click_step(self):
-        next_line = self.me.step(undef)
+        try:
+            next_line = self.me.step(undef)
+        except Exception as err:
+            mixlog(MERROR, err)
+            traceback.print_exc()
+            return
+        
         self.tableWidget.selectRow(next_line)
 
         self.current_line = next_line - self.me.orig
@@ -285,15 +307,15 @@ class MixMainWindow(QMainWindow):
         self.action_run = QAction(QIcon("res/ico/run.ico"), "&Go", self, triggered=self.on_click_go)
         self.action_info = QAction(QIcon("res/ico/alien.ico"), "&Info", self, triggered=self.on_click_info)
 
-        self.openMenu = self.menuBar().addMenu("&文件")
+        self.openMenu = self.menuBar().addMenu("&Open")
         self.openMenu.addAction(self.action_open_file)
-        self.debugMenu = self.menuBar().addMenu("&调试")
+        self.debugMenu = self.menuBar().addMenu("&Debug")
         self.debugMenu.addAction(self.action_debug)
         self.debugMenu.addAction(self.action_step)
         self.debugMenu.addAction(self.action_resume)
         self.debugMenu.addAction(self.action_stop)
         self.debugMenu.addAction(self.action_run)
-        self.infoMenu = self.menuBar().addMenu("&信息")
+        self.infoMenu = self.menuBar().addMenu("&Info")
         self.infoMenu.addAction(self.action_info)
 
         self.toolbar = self.addToolBar('Open')
@@ -402,17 +424,17 @@ class MixMainWindow(QMainWindow):
 
         self.dec_radio = QRadioButton()
         self.dec_radio.setChecked(True)
-        self.dec_radio.setText("十")
+        self.dec_radio.setText("Dec")
         self.dec_radio.toggled.connect(lambda: self.load_memory_into_display())
 
         self.bin_radio = QRadioButton()
         self.bin_radio.setChecked(False)
-        self.bin_radio.setText("二")
+        self.bin_radio.setText("Bin")
         self.bin_radio.toggled.connect(lambda: self.load_memory_into_display())
 
         self.ch_radio = QRadioButton()
         self.ch_radio.setChecked(False)
-        self.ch_radio.setText("字")
+        self.ch_radio.setText("Chr")
         self.ch_radio.toggled.connect(lambda: self.load_memory_into_display())
 
         self.space_label = QLabel('         ')
