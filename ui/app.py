@@ -115,6 +115,9 @@ class MixMainWindow(QMainWindow):
         self.jsym_label.setText(self.memory.jsym)
         self.jnum_label.setText(str(partstodec_withsign(self.memory.getj())))
 
+        self.overload_switch_label.setText(str(self.memory.overload_switch))
+        self.comparison_indicator_label.setText(self.memory.comparison_indicator)
+
         for i in range(4000):
             m = self.memory.getMemory(i)
             self.tableWidget.setItem(i, 0, QTableWidgetItem(str(m[0])))
@@ -132,16 +135,7 @@ class MixMainWindow(QMainWindow):
             mapp_debug.preprocessall()
         except Exception as err:
             mixlog(MERROR, str(err))
-            # os._exit(1)
-            # nothing is impacted at the moment, just break
-            print(str(err))
-            dialog = InfoDialog('muhahaha')
-            sG = QApplication.desktop().screenGeometry()
-            x = (sG.width() - dialog.width()) / 2
-            y = (sG.height() - dialog.height()) / 2
-    
-            dialog.move(x, y)
-            dialog.exec_()
+            traceback.print_exc()
             return
         
         processed_code_dict = mapp_debug.processed_code_dict
@@ -286,7 +280,13 @@ class MixMainWindow(QMainWindow):
             self.memory.setMemory(line, [sym] + aa + [i, f, c])
 
         self.me = MixExecutor(processed_code_dict, orig, end, self.memory)
-        self.me.go(True)
+        try:
+            self.me.go(True)
+        except Exception as err:
+            mixlog(MERROR, str(err))
+            traceback.print_exc()
+            return
+
         mixlog(MDEBUG, "finished executing")
         self.tableWidget.clearContents()
         self.load_memory_into_display()
@@ -522,6 +522,8 @@ class MixMainWindow(QMainWindow):
         grid.addWidget(self.j4_label, 9, 3)
         grid.addWidget(self.j5_label, 9, 4)
         grid.addWidget(self.jnum_label, 9, 5)
+        grid.addWidget(self.overload_switch_label, 9, 6)
+        grid.addWidget(self.comparison_indicator_label, 9, 7)
 
         grid.addWidget(self.tableWidget, 10, 1, 1, 18)
 

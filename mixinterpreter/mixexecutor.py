@@ -77,7 +77,7 @@ class MixExecutor(MySM):
                     a[x] = m_seg[x - 6 + len(m_seg)]
                 self.memory.saveA(a)
 
-        if (c == OP_LDAN):
+        if c == OP_LDAN:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
             if (f == WORD_WIDTH):
@@ -103,7 +103,7 @@ class MixExecutor(MySM):
                         a[x] = m_seg[x - 6 + len(m_seg)]
                 self.memory.saveA(a)
 
-        if (c == OP_LDX):
+        if c == OP_LDX:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
             if (f == WORD_WIDTH):
@@ -126,7 +126,7 @@ class MixExecutor(MySM):
                     x[t] = m_seg[t - 6 + len(m_seg)]
                 self.memory.saveX(x)
 
-        if (c == OP_LDXN):
+        if c == OP_LDXN:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
             if (f == WORD_WIDTH):
@@ -152,35 +152,38 @@ class MixExecutor(MySM):
                         x[t] = m_seg[t - 6 + len(m_seg)]
                 self.memory.saveX(x)
 
-        if (c == OP_LD1 or c == OP_LD2 or c == OP_LD3 or c == OP_LD4 or c == OP_LD5 or c == OP_LD6):
+        if OP_LD1 <= c <= OP_LD6:
             j = c - OP_LD1 + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
-            (L, R) = LRFROMF(f)
+            # (L, R) = LRFROMF(f)
             r_content = getattr(self.memory, 'geti' + str(j))()
             r_content[0] = m[0]
             r_content[1:3] = m[4:6]
             getattr(self.memory, 'savei' + str(j))(r_content)
 
-        if (c == OP_LD1N or c == OP_LD2N or c == OP_LD3N or c == OP_LD4N or c == OP_LD5N or c == OP_LD6N):
+        if OP_LD1N <= c <= OP_LD6N:
             j = c - OP_LD1N + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             m = self.memory.getMemory(aa + m_shift)
-            (L, R) = LRFROMF(f)
-            getattr(self.memory, 'savei' + str(j))([negsign(m[0])] + m[L: R + 1])
+            # (L, R) = LRFROMF(f)
+            r_content = getattr(self.memory, 'geti' + str(j))()
+            r_content[0] = negsign(m[0])
+            r_content[1:3] = m[4:6]
+            getattr(self.memory, 'savei' + str(j))(r_content)
 
-        if (c == OP_STA):
+        if c == OP_STA:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
             a = self.memory.getA()
-            if (f == WORD_WIDTH):
+            if f == WORD_WIDTH:
                 self.memory.setMemory(aa, a)
             else:
                 m = self.memory.getMemory(aa)
                 (L, R) = LRFROMF(f)
 
                 a_seg = None
-                if (L == 0):
+                if L == 0:
                     m[0] = a[0]
                     if (L == R):
                         return  # done
@@ -194,7 +197,7 @@ class MixExecutor(MySM):
                     m[t] = a_seg[t - L]
                 self.memory.setMemory(aa, m)
 
-        if (c == OP_STX):
+        if c == OP_STX:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
             x = self.memory.getX()
@@ -219,7 +222,7 @@ class MixExecutor(MySM):
                     m[t] = x_seg[t - L]
                 self.memory.setMemory(aa, m)
 
-        if (c == OP_ST1 or c == OP_ST2 or c == OP_ST3 or c == OP_ST4 or c == OP_ST5 or c == OP_ST6):
+        if OP_ST1 <= c <= OP_ST6:
             k = c - OP_ST1 + 1
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
@@ -230,7 +233,7 @@ class MixExecutor(MySM):
             m[4:6] = i_content[1:3]
             self.memory.setMemory(aa, m)
 
-        if (c == OP_STJ):
+        if c == OP_STJ:
             # if (aa.isalpha()):
             # for STJ / JMP
             # j = partstodec_withsign(self.memory.getj());
@@ -244,11 +247,11 @@ class MixExecutor(MySM):
             m[1:3] = j[1:3]
             self.memory.setMemory(aa, m)
 
-        if (c == OP_STZ):
+        if c == OP_STZ:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
             x = ['+', 0, 0, 0, 0, 0]
-            if (f == WORD_WIDTH):
+            if f == WORD_WIDTH:
                 self.memory.setMemory(aa, x)
             else:
                 m = self.memory.getMemory(aa)
@@ -269,24 +272,24 @@ class MixExecutor(MySM):
                     m[t] = x_seg[t - L]
                 self.memory.setMemory(aa, m)
 
-        if (c == OP_ADD):
+        if c == OP_ADD:
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
             m = self.memory.getMemory(aa)
             a = self.memory.getA()
 
             (L, R) = LRFROMF(f)
-            if (L == 0):
+            if L == 0:
                 L = L + 1
 
             m_seg = m[L:R + 1]
 
             m_part = partstodec(m_seg)
             a_part = partstodec(a[1:])
-            if (a[0] == '-'):
+            if a[0] == '-':
                 a_part = a_part * -1
 
-            if (m[0] == '-'):
+            if m[0] == '-':
                 m_part = m_part * -1
 
             result = a_part + m_part
@@ -482,41 +485,55 @@ class MixExecutor(MySM):
 
         # aa == "JMP" for STJ / JMP *
         if (c == OP_JMP):  # or aa == "JMP"):
-            if (c == OP_JMP):
-                self.memory.savej(dectobin_withsign(next_statement, 2))
-                m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
-                next_statement = aa + m_shift
-                # for JMP * back to subroutine caller
-                # if (aa == "JMP"):
-                # self.memory.savej(dectobin_withsign(next_statement, 2))
-                # loc = statement.split()[0]
-                # addr = self.runtime_symboltable[loc]
-                # next_statement = addr
+            self.memory.savej(dectobin_withsign(next_statement, 2))
+            m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
+            next_statement = aa + m_shift
+            # for JMP * back to subroutine caller
+            # if (aa == "JMP"):
+            # self.memory.savej(dectobin_withsign(next_statement, 2))
+            # loc = statement.split()[0]
+            # addr = self.runtime_symboltable[loc]
+            # next_statement = addr
 
-        if (c == OP_JOV):
-            if (self.memory.isoverloaded()):
+        if c == OP_JOV:
+            if self.memory.isoverloaded():
                 self.memory.clearoverload()
                 m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
                 next_statement = aa + m_shift
 
-        if (c == OP_JNOV):
-            if (self.memory.isoverloaded()):
+        if c == OP_JNOV:
+            if self.memory.isoverloaded():
                 self.memory.clearoverload()
             else:
                 m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
                 next_statement = aa + m_shift
 
-        if (c == OP_JE):
+        if c == OP_JL:
             indi = self.memory.getcomparisonindicator()
-            if (indi == COMP_EQAL):
+            if indi == COMP_LESS:
                 next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
 
-        if (c == OP_JGE):
+        if c == OP_JE:
             indi = self.memory.getcomparisonindicator()
-            if (indi == COMP_GRET or indi == COMP_EQAL):
+            if indi == COMP_EQAL:
                 next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
 
-        if (c == OP_JXZ):
+        if c == OP_JG:
+            indi = self.memory.getcomparisonindicator()
+            if indi == COMP_GRET:
+                next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
+
+        if c == OP_JNE:
+            indi = self.memory.getcomparisonindicator()
+            if indi != COMP_EQAL:
+                next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
+
+        if c == OP_JGE:
+            indi = self.memory.getcomparisonindicator()
+            if indi == COMP_GRET or indi == COMP_EQAL:
+                next_statement = aa + partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
+
+        if c == OP_JXZ:
             x = partstodec_withsign(self.memory.getX())
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             if (x == 0):

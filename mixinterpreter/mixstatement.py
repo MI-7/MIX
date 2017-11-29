@@ -35,8 +35,11 @@ statementdict = {
     'JMP': 100,
     'JOV': 102,
     'JNOV': 103,
+    'JL': 104,
     'JE': 105,
+    'JG': 106,
     'JGE': 107,
+    'JNE': 108,
     'JXZ': 117,
     'J3Z': 130,
     'J1P': 134,
@@ -135,7 +138,10 @@ statementprofilingdict = {
     'JOV': 1,
     'JNOV': 1,
     'JE': 1,
+    'JL': 1,
+    'JG': 1,
     'JGE': 1,
+    'JNE': 1,
     'JXZ': 1,
     'J3Z': 1,
     'J1P': 1,
@@ -240,8 +246,11 @@ OP_STZ = 33
 OP_JMP = 100
 OP_JOV = 102
 OP_JNOV = 103
+OP_JL = 104
 OP_JE = 105
+OP_JG = 106
 OP_JGE = 107
+OP_JNE = 108
 OP_JXZ = 117
 OP_J1Z = 128
 OP_J2Z = 129

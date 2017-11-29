@@ -27,27 +27,28 @@ class MixToMachineCodeTranslatorSM(MySM):
     
     def getNextValues(self, state, inp, verbose=False):
         s = state
-        if (s == "op" and inp.isalpha()):
+        if s == "op" and inp.isalpha():
             self.op = self.op + inp
-        elif (s == "op" and inp.isnumeric()):
+        elif s == "op" and inp.isnumeric():
             self.op = self.op + inp
-        elif (s == "op" and inp.isspace()):
+        elif s == "op" and inp.isspace():
             s = "addr"
-            if (self.op in statementdict):
+            if self.op in statementdict:
                 self.c = statementdict[self.op]
             else:
-                mixlog(MINFO, 'no such op:'+self.op)
-        elif (s == "addr" and inp == "-"):
+                mixlog(MERROR, 'no such op:'+self.op)
+                print('no such op:'+self.op)
+        elif s == "addr" and inp == "-":
             self.sym = "-"
             self.aa = self.aa + inp
-        elif (s == "addr" and inp.isnumeric()):
+        elif s == "addr" and inp.isnumeric():
             self.aa = self.aa + inp
         # For STJ EXIT
-        elif (s == 'addr' and inp.isalpha()):
+        elif s == 'addr' and inp.isalpha():
             self.aa = self.aa + inp
-        elif (s == "addr" and inp == ","):
+        elif s == "addr" and inp == ",":
             s = "i"
-        elif (s == "addr" and inp == "("):
+        elif s == "addr" and inp == "(":
             s = "L"
         elif (s == "i" and inp.isnumeric()):
             if (self.i == "0"):

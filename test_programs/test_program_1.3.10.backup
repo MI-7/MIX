@@ -30,12 +30,14 @@ A       CMP2    ROW
 A1      CMP3    COL
         JNE     A2
         INC2    1           # i++
-        ENT3    1           # j=1
-        ENT4    0,2
+        ENT3    1           # k=1
+        ST2     TEMP        # i -> temp
+        LD4     TEMP        # temp -> k
         ENT5    1           # l=1
         JMP     A3
 A2      INC3    1           # j++
-        ENT5    1           # l = 1
+        ST3     TEMP        # j -> temp
+        LD5     TEMP        # temp -> l
 A3      CMP6    MODE        # ri6 == 0?
         JE      X           # current mode = 0, go to col moving part
         JMP     Y           # go to row moving part
