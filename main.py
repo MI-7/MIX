@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
         self.action_run.setEnabled(False)
 
         self.executorwindow.textbox_code.setPlainText(os.linesep.join(processed_code))
+        self.memorywindow.refreshmemory(self.executorwindow.memory)
 
     @pyqtSlot()
     def on_click_stop(self):
@@ -100,6 +101,8 @@ class MainWindow(QMainWindow):
             mixlog(MERROR, err)
             traceback.print_exc()
             return
+
+        self.memorywindow.refreshmemory(self.executorwindow.memory)
 
         self.executorwindow.tableWidget.selectRow(next_line)
 
@@ -242,13 +245,13 @@ class MainWindow(QMainWindow):
         self.action_stop.setEnabled(False)
         self.action_run.setEnabled(False)
 
-        self.memorywindow = MixMemoryNeon()
-        self.memorywindow.setWindowTitle("Memory")
-        self.mdi.addSubWindow(self.memorywindow)
-
         self.memorywindow2 = MixMemoryNeon()
         self.memorywindow2.setWindowTitle("Memory2")
         self.mdi.addSubWindow(self.memorywindow2)
+
+        self.memorywindow = MixMemoryNeon()
+        self.memorywindow.setWindowTitle("Memory")
+        self.mdi.addSubWindow(self.memorywindow)
 
         self.executorwindow = MixMainWindow()
         self.executorwindow.setWindowTitle("Executor")
