@@ -4,8 +4,7 @@ from mixinterpreter.mixaltomachinecode import *
 
 from mixinterpreter.blockdevice import *
 from mixinterpreter.sm import MySM
-from globalconfig import *
-import time
+
 
 
 # execute single line of code
@@ -733,9 +732,6 @@ class MixExecutor(MySM):
                 if c == OP_MOVE:
                     unit = op_moved * 2 + 1
                 self.profilingresult[current_line] = (self.processed_code_dict[current_line], 1, unit, unit)
-
-        # if MIX_EXECUTION_WAIT != 0:
-            # time.sleep(MIX_EXECUTION_WAIT)
 
         return next_statement
 

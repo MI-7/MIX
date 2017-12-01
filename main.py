@@ -1,6 +1,7 @@
 from ui.mixmainwindow import *
 from PyQt5.QtWidgets import QApplication
 from ui.mixmemoryneon import *
+from globalconfig import *
 
 
 class MainWindow(QMainWindow):
@@ -18,6 +19,11 @@ class MainWindow(QMainWindow):
         file.addAction("Tiled")
         file.triggered[QAction].connect(self.windowaction)
         self.setWindowTitle("MDI demo")
+
+        self.timer = QTimer()
+        self.timer.setInterval(MIX_EXECUTION_WAIT)
+        self.timer.timeout.connect(self.timer_event)
+        self.timer.stop()
 
         self.initUI()
 
@@ -157,6 +163,28 @@ class MainWindow(QMainWindow):
             self.action_stop.setEnabled(False)
             self.action_run.setEnabled(True)
 
+    def da_hook(self):
+        self.executorwindow.load_memory_into_display()
+        # self.executorwindow.load_profiling_results()
+        self.memorywindow.refreshmemory(self.executorwindow.memory)
+
+    @pyqtSlot()
+    def timer_event(self):
+        try:
+            # self.executorwindow.me.go(True)
+            # while not self.executorwindow.me.done(self.executorwindow.me.state):
+            self.executorwindow.me.step(undef)
+
+            if self.executorwindow.me.done(self.executorwindow.me.state):
+                self.timer.stop()
+                self.executorwindow.load_profiling_results()
+
+            self.da_hook()
+        except Exception as err:
+            mixlog(MERROR, str(err))
+            traceback.print_exc()
+            return
+
     @pyqtSlot()
     def on_click_go(self):
         mapp_inner = MixALPreProcessor(self.executorwindow.code_text_in_list)
@@ -175,18 +203,18 @@ class MainWindow(QMainWindow):
             aa = dectobin(my_int(aa), 2)
             self.executorwindow.memory.setMemory(line, [sym] + aa + [i, f, c])
 
+        self.executorwindow.tableWidget.clearContents()
+        self.da_hook()
+
         self.executorwindow.me = MixExecutor(processed_code_dict, orig, end, self.executorwindow.memory)
-        try:
-            self.executorwindow.me.go(True)
-        except Exception as err:
-            mixlog(MERROR, str(err))
-            traceback.print_exc()
-            return
+        self.executorwindow.me.start()
+
+        self.timer.start()
 
         mixlog(MDEBUG, "finished executing")
-        self.executorwindow.tableWidget.clearContents()
-        self.executorwindow.load_memory_into_display()
-        self.executorwindow.load_profiling_results()
+
+        # self.executorwindow.load_memory_into_display()
+        # self.executorwindow.load_profiling_results()
 
     def windowaction(self, q):
         print("triggered")
