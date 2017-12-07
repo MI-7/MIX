@@ -28,7 +28,6 @@ class MyWidget(QtWidgets.QWidget):
         if self.memory is None:
             return
 
-        startx, starty = 10, 10
         painter = QtGui.QPainter(self)
         pen = QtGui.QPen(QtGui.QColor(0, 0, 0))
         pen.setWidth(2)
