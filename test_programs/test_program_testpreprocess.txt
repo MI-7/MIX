@@ -6,12 +6,17 @@ C       EQU     L * 3
 D       EQU     L / 2
         ORIG    3000 + L
         ST2     L + A, 1
-        JMP     @ - 2
+        JMP     @ +6
         ENT4    L + 10, 1 (NEWLINE)
         ENT4    L * 2 (NEWLINE)
         ENT4    L + 100
         ENT4    L + 200, 1
-        JUMP    D3
+        JMP     D3
+        LD1     1000
+        ENTA    1
+        SLA     4
+        STA     @+1(0:2)
+        LDA     @,1
 D3      ENT2    1
-        JUMP    D
+        JMP     D
 D       ENT3    1

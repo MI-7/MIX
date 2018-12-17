@@ -177,6 +177,7 @@ class MixExecutor(MySM):
             m_shift = partstodec_withsign(getattr(self.memory, 'geti' + str(i))())
             aa = aa + m_shift
             a = self.memory.getA()
+
             if f == WORD_WIDTH:
                 self.memory.setMemory(aa, a)
             else:
@@ -187,15 +188,18 @@ class MixExecutor(MySM):
                 if L == 0:
                     m[0] = a[0]
                     if (L == R):
-                        return  # done
+                        pass  # do nothing ??
                     else:
                         a_seg = a[6 - (R - L): 6]
                 else:
                     a_seg = a[6 - (R - L + 1):6]
+
                 if (L == 0):
                     L = L + 1
+
                 for t in range(L, R + 1):
                     m[t] = a_seg[t - L]
+
                 self.memory.setMemory(aa, m)
 
         if c == OP_STX:
@@ -212,7 +216,7 @@ class MixExecutor(MySM):
                 if (L == 0):
                     m[0] = x[0]
                     if (L == R):
-                        return  # done
+                        pass  # done ??
                     else:
                         x_seg = x[6 - (R - L): 6]
                 else:
@@ -732,6 +736,11 @@ class MixExecutor(MySM):
                 if c == OP_MOVE:
                     unit = op_moved * 2 + 1
                 self.profilingresult[current_line] = (self.processed_code_dict[current_line], 1, unit, unit)
+
+        if next_statement not in self.processed_code_dict.keys():
+            self.halted = True
+            print(MERROR, 'statement out of range: ', next_statement)
+            mixlog(MERROR, 'statement out of range: ', next_statement)
 
         return next_statement
 
